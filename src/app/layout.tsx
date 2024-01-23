@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import ReactQueryProvider from "@/components/providers/react-query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,14 +21,16 @@ export default function RootLayout({
         <ClerkProvider>
             <html lang="en" suppressHydrationWarning>
                 <body className="bg-white dark:bg-neutral-900">
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="dark"
-                        enableSystem={false}
-                        storageKey="discord-clone-theme"
-                    >
-                        {children}
-                    </ThemeProvider>
+                    <ReactQueryProvider>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="dark"
+                            enableSystem={false}
+                            storageKey="discord-clone-theme"
+                        >
+                            {children}
+                        </ThemeProvider>
+                    </ReactQueryProvider>
                 </body>
             </html>
         </ClerkProvider>

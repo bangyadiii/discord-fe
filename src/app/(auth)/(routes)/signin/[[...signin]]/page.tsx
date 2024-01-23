@@ -1,11 +1,11 @@
-// import { SignIn } from "@clerk/nextjs";
+import { SignIn } from "@clerk/nextjs";
 
-// function Page() {
-//     return (
-//         <div className="w-full min-h-screen flex justify-center items-center">
-//             <SignIn />
-//         </div>
-//     );
-// }
+function Page() {
+    return (
+        <div className="w-full min-h-screen flex justify-center items-center">
+            <SignIn />
+        </div>
+    );
+}
 
-// export default Page;
+export default Page;
