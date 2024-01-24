@@ -27,15 +27,17 @@ import React, { useEffect } from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
+import { useModal } from "../../../hooks/use-modal-store";
 
 const schema = z.object({
     name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
     imageUrl: z.string().url(),
 });
 
-export default function InitialModal() {
-    const [mounted, setMounted] = React.useState(false);
+export default function CreateServerModal() {
     const router = useRouter();
+    const { isOpen, onClose, type } = useModal();
+    const isModalOpen = isOpen && type === "createServer";
 
     const form = useForm({
         resolver: zodResolver(schema),
@@ -44,27 +46,21 @@ export default function InitialModal() {
             imageUrl: "",
         },
     });
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // const { isLoading, data, mutate } = useCreateServer({
-    //     name: form.getValues().name,
-    //     imageUrl: form.getValues().imageUrl,
-    // });
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
         await axiosInstance.post("/servers", values);
         form.reset();
         router.refresh();
-        window.location.reload();
+        onClose();
+    };
+    const handleClose = () => {
+        form.reset();
+        onClose();
     };
 
-    if (!mounted) return null;
-
     return (
-        <Dialog open>
-            <DialogContent className="bg-primary text-black p-0 overflow-hidden">
+        <Dialog open={isModalOpen} onOpenChange={handleClose}>
+            <DialogContent className="bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8">
                     <DialogTitle className="text-2xl px-6 text-center font-bold">
                         Customize Your Server
@@ -121,9 +117,7 @@ export default function InitialModal() {
                             ></FormField>
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-3">
-                            <Button className="w-full">
-                                Create
-                            </Button>
+                            <Button className="w-full">Create</Button>
                         </DialogFooter>
                     </form>
                 </Form>
