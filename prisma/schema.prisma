@@ -11,31 +11,30 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-model User{
-  id        String      @id @default(uuid())
-  userId   String @unique
-  name      String
-  email     String   @unique
-  profileUrl  String @db.Text
-  servers   Server[]
-  members  Member[]
+model User {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  name       String
+  email      String   @unique
+  profileUrl String   @db.Text
+  servers    Server[]
+  members    Member[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Server {
-  id        String      @id @default(uuid())
-  name      String
-  imageUrl  String @db.Text
-  inviteCode String @unique
-  channels  Channel[]
+  id         String    @id @default(uuid())
+  name       String
+  imageUrl   String    @db.Text
+  inviteCode String    @unique
+  channels   Channel[]
 
-  ownerId   String
-  owner     User @relation(fields: [ownerId], references: [id])
-  
-  members  Member[]
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  members Member[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,11 +48,11 @@ enum ChannelType {
 }
 
 model Channel {
-  id        String      @id @default(uuid())
-  name      String
-  type      ChannelType
-  serverId  String
-  server    Server @relation(fields: [serverId], references: [id])
+  id       String      @id @default(uuid())
+  name     String
+  type     ChannelType
+  serverId String
+  server   Server      @relation(fields: [serverId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -68,13 +67,13 @@ enum MembershipRole {
   GUEST
 }
 
-model Member{
-  id        String      @id @default(uuid())
-  role      MembershipRole @default(MEMBER)
-  userId    String
-  user      User @relation(fields: [userId], references: [id])
-  serverId  String
-  server   Server @relation(fields: [serverId], references: [id])
+model Member {
+  id       String         @id @default(uuid())
+  role     MembershipRole @default(MEMBER)
+  userId   String
+  user     User           @relation(fields: [userId], references: [id])
+  serverId String
+  server   Server         @relation(fields: [serverId], references: [id])
 
   @@index([userId])
   @@index([serverId])

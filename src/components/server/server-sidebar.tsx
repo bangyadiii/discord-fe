@@ -12,10 +12,11 @@ export default function ServerSideBar({ server }: ServerSideBarProps) {
     const voiceChannels = server.channels?.filter(
         (channel) => channel.type === ChannelType.VOICE
     );
+    const role = server.members?.find((member) => member.role === "OWNER")?.role;
 
     return (
         <div className="flex flex-col h-full w-full bg-secondary">
-            <ServerSideBarHeader server={server} />
+            <ServerSideBarHeader server={server} role={role} />
         </div>
     );
 }

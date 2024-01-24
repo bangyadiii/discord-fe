@@ -29,6 +29,11 @@ export default function ServerSideBarHeader({
     role,
 }: ServerSideBarHeaderProps) {
     const { onOpen } = useModal();
+    const owner = server.members?.find((member) => member.role === "OWNER");
+    const admins = server.members?.filter((member) => member.role === "ADMIN");
+    const members = server.members?.filter(
+        (member) => member.role === "MEMBER"
+    );
 
     return (
         <DropdownMenu>
@@ -48,23 +53,34 @@ export default function ServerSideBarHeader({
                     Invite People
                     <UserRoundPlus className="h-4 w-4 ml-auto" />
                 </DropdownMenuItem>
-                <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer">
-                    Settings
-                    <Settings className="h-4 w-4 ml-auto" />
-                </DropdownMenuItem>
-                <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer">
-                    Create Channel
-                    <PlusCircle className="h-4 w-4 ml-auto" />
-                </DropdownMenuItem>
+
+                {(role === "OWNER" || role === "ADMIN") && (
+                    <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer" onClick={() => {
+                        onOpen("editServer", { server });
+                    }}>
+                        Settings
+                        <Settings className="h-4 w-4 ml-auto" />
+                    </DropdownMenuItem>
+                )}
+
+                {(role === "OWNER" || role === "ADMIN") && (
+                    <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer">
+                        Create Channel
+                        <PlusCircle className="h-4 w-4 ml-auto" />
+                    </DropdownMenuItem>
+                )}
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer text-red-500">
                     Leave Server
                     <LogOut className="h-4 w-4 ml-auto" />
                 </DropdownMenuItem>
-                <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer text-red-500">
-                    Delete Server
-                    <Trash className="h-4 w-4 ml-auto" />
-                </DropdownMenuItem>
+                {role === "OWNER" && (
+                    <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer text-red-500">
+                        Delete Server
+                        <Trash className="h-4 w-4 ml-auto" />
+                    </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );
