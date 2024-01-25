@@ -71,10 +71,10 @@ export default function EditServerModal() {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
-            <DialogContent className="bg-white text-black p-0 overflow-hidden">
+            <DialogContent className="p-0 overflow-hidden bg-background">
                 <DialogHeader className="pt-8">
                     <DialogTitle className="text-2xl px-6 text-center font-bold">
-                        Customize Your Server
+                        Setting Server
                     </DialogTitle>
                     <DialogDescription className="text-center">
                         Give your server a personality by adding a name and an
@@ -110,13 +110,13 @@ export default function EditServerModal() {
                                         <FormItem>
                                             <FormLabel
                                                 htmlFor="name"
-                                                className="font-bold uppercase text-xs text-zinc-500 dark:text-secondary/75"
+                                                className="font-bold uppercase text-xs text-zinc-500 dark:text-secondary-foreground"
                                             >
                                                 Server Name
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    className="bg-zinc-300 border-0 focus-visible:ring-0 text-black"
+                                                    className="bg-zinc-300 text-zinc-800 border-0 focus-visible:ring-0 "
                                                     placeholder="Input your server name"
                                                     {...field}
                                                 />
@@ -127,7 +127,7 @@ export default function EditServerModal() {
                                 }}
                             ></FormField>
                         </div>
-                        <DialogFooter className="bg-gray-100 px-6 py-3">
+                        <DialogFooter className="bg-secondary px-6 py-3">
                             <Button className="w-full">Save</Button>
                         </DialogFooter>
                     </form>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { LoaderIcon } from "lucide-react";
+import { Loader2, LoaderIcon } from "lucide-react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -21,13 +21,13 @@ import {
     FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
-import React, { useEffect } from "react";
+import React from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
 import { useModal } from "../../../hooks/use-modal-store";
+import { useToast } from "../ui/use-toast";
 
 const schema = z.object({
     name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
@@ -37,7 +37,9 @@ const schema = z.object({
 export default function CreateServerModal() {
     const router = useRouter();
     const { isOpen, onClose, type } = useModal();
+    const [isLoading, setIsLoading] = React.useState(false);
     const isModalOpen = isOpen && type === "createServer";
+    const { toast } = useToast();
 
     const form = useForm({
         resolver: zodResolver(schema),
@@ -48,10 +50,24 @@ export default function CreateServerModal() {
     });
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
-        await axiosInstance.post("/servers", values);
-        form.reset();
-        router.refresh();
-        onClose();
+        try {
+            setIsLoading(true);
+            await axiosInstance.post("/servers", values);
+            form.reset();
+            router.refresh();
+            onClose();
+        } catch (error: any) {
+            setIsLoading(false);
+            console.log(error);
+            toast({
+                title: "Oops! Something went wrong.",
+                description: error.message,
+                duration: 5000,
+                className: "bg-red-500",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
     const handleClose = () => {
         form.reset();
@@ -60,10 +76,10 @@ export default function CreateServerModal() {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
-            <DialogContent className="bg-white text-black p-0 overflow-hidden">
+            <DialogContent className=" p-0 overflow-hidden">
                 <DialogHeader className="pt-8">
-                    <DialogTitle className="text-2xl px-6 text-center font-bold">
-                        Customize Your Server
+                    <DialogTitle className="text-2xl px-6 text-center font-bold text-primary-foreground">
+                        Create Your Own Server
                     </DialogTitle>
                     <DialogDescription className="text-center">
                         Give your server a personality by adding a name and an
@@ -99,7 +115,7 @@ export default function CreateServerModal() {
                                         <FormItem>
                                             <FormLabel
                                                 htmlFor="name"
-                                                className="font-bold uppercase text-xs text-zinc-500 dark:text-secondary/75"
+                                                className="font-bold uppercase text-xs text-zinc-500 dark:text-zinc-300"
                                             >
                                                 Server Name
                                             </FormLabel>
@@ -116,8 +132,11 @@ export default function CreateServerModal() {
                                 }}
                             ></FormField>
                         </div>
-                        <DialogFooter className="bg-gray-100 px-6 py-3">
-                            <Button className="w-full">Create</Button>
+                        <DialogFooter className="bg-secondary px-6 py-3">
+                            <Button className="w-full" disabled={isLoading}>
+                                Create
+                                {isLoading && <Loader2 />}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

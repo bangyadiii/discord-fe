@@ -35,6 +35,7 @@ export default function RootLayout({
                         >
                             <ModalProvider />
                             {children}
+                            <Toaster />
                         </ThemeProvider>
                     </ReactQueryProvider>
                 </body>

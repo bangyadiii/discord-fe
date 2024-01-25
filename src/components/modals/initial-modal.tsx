@@ -1,7 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { LoaderIcon } from "lucide-react";
+import { set, useForm } from "react-hook-form";
+import { Loader2, LoaderIcon } from "lucide-react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,13 +20,14 @@ import {
     FormLabel,
     FormMessage,
 } from "../ui/form";
-import { Input } from "../ui/input";
-import { ModeToggle } from "../ModeToggle";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import React, { useEffect } from "react";
-import FileUpload from "../file-upload";
+import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const schema = z.object({
     name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
@@ -35,6 +36,8 @@ const schema = z.object({
 
 export default function InitialModal() {
     const [mounted, setMounted] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const { toast } = useToast();
     const router = useRouter();
 
     const form = useForm({
@@ -48,23 +51,39 @@ export default function InitialModal() {
         setMounted(true);
     }, []);
 
-    // const { isLoading, data, mutate } = useCreateServer({
-    //     name: form.getValues().name,
-    //     imageUrl: form.getValues().imageUrl,
-    // });
-
     const onSubmit = async (values: z.infer<typeof schema>) => {
-        await axiosInstance.post("/servers", values);
-        form.reset();
-        router.refresh();
-        window.location.reload();
+        try {
+            setIsLoading(true);
+            await axiosInstance.post("/servers", values);
+            form.reset();
+            router.refresh();
+            window.location.reload();
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+            toast({
+                title: "Something went wrong",
+                description: "Your server could not be created.",
+                duration: 5000,
+                action: (
+                    <ToastAction
+                        onClick={form.handleSubmit(onSubmit)}
+                        altText="Try again"
+                    >
+                        Try again
+                    </ToastAction>
+                ),
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (!mounted) return null;
 
     return (
         <Dialog open>
-            <DialogContent className="bg-primary text-black p-0 overflow-hidden">
+            <DialogContent className="bg-background p-0 overflow-hidden">
                 <DialogHeader className="pt-8">
                     <DialogTitle className="text-2xl px-6 text-center font-bold">
                         Customize Your Server
@@ -120,9 +139,10 @@ export default function InitialModal() {
                                 }}
                             ></FormField>
                         </div>
-                        <DialogFooter className="bg-gray-100 px-6 py-3">
-                            <Button className="w-full">
+                        <DialogFooter className="bg-secondary px-6 py-3">
+                            <Button className="w-full" disabled={isLoading}>
                                 Create
+                                {isLoading && <Loader2 />}
                             </Button>
                         </DialogFooter>
                     </form>

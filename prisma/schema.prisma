@@ -25,11 +25,12 @@ model User {
 }
 
 model Server {
-  id         String    @id @default(uuid())
-  name       String
-  imageUrl   String    @db.Text
-  inviteCode String    @unique
-  channels   Channel[]
+  id                String            @id @default(uuid())
+  name              String
+  imageUrl          String            @db.Text
+  inviteCode        String            @unique
+  channelCategories ChannelCategory[]
+  channels          Channel[]
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id])
@@ -42,22 +43,39 @@ model Server {
   @@index([ownerId])
 }
 
+model ChannelCategory {
+  id   String @id @default(uuid())
+  name String
+
+  serverId String
+  server   Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  channels Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serverId])
+}
+
 enum ChannelType {
   TEXT
   VOICE
 }
 
 model Channel {
-  id       String      @id @default(uuid())
-  name     String
-  type     ChannelType
-  serverId String
-  server   Server      @relation(fields: [serverId], references: [id])
+  id         String           @id @default(uuid())
+  name       String
+  type       ChannelType
+  serverId   String 
+  server     Server           @relation(fields: [serverId], references: [id], onDelete: Cascade) 
+  categoryId String?
+  category   ChannelCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([serverId])
+  @@index([categoryId])
 }
 
 enum MembershipRole {
@@ -71,9 +89,9 @@ model Member {
   id       String         @id @default(uuid())
   role     MembershipRole @default(MEMBER)
   userId   String
-  user     User           @relation(fields: [userId], references: [id])
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   serverId String
-  server   Server         @relation(fields: [serverId], references: [id])
+  server   Server         @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([serverId])
