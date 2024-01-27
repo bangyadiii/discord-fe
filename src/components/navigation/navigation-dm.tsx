@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ActionTooltip } from "../action-tooltip";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
+import DiscordIcon from "../../../public/discord-icon.svg";
 
 export default function NavigationDM({
     user,
@@ -28,14 +29,15 @@ export default function NavigationDM({
                 />
                 <div
                     className={cn(
-                        "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[15px] transition-all overflow-hidden",
+                        "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[15px] transition-all overflow-hidden items-center justify-center group-hover:bg-primary bg-background",
                         // params?.userId === user?.id &&
                             // "bg-primary/10 text-primary rounded-[16px]"
                     )}
                 >
                     <Image
-                        fill
-                        src="/assets/discord-icon.svg"
+                        src={DiscordIcon}
+                        width={35}
+                        height={35}
                         alt="Discord ICON"
                     />
                 </div>

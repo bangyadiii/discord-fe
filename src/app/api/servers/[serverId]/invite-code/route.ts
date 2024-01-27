@@ -7,7 +7,6 @@ export async function PATCH(
     req: Request,
     { params }: { params: { serverId: string } }
 ) {
-    console.log("ServerId", params.serverId);
     try {
         const user = await currentProfile();
 

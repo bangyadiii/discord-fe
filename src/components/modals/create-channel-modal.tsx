@@ -28,15 +28,14 @@ import {
     FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import React, { useEffect } from "react";
-import FileUpload from "../file-upload";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
 import { useModal } from "../../../hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
-import { Loader } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { useToast } from "../ui/use-toast";
 
 const schema = z.object({
     name: z
@@ -48,15 +47,16 @@ const schema = z.object({
         }),
     type: z.nativeEnum(ChannelType),
     serverId: z.string(),
+    categoryId: z.string().nullable(),
 });
 
 export default function CreateChannelModal() {
     const router = useRouter();
     const param = useParams();
-
-    const { isOpen, onClose, type } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
     const [isLoading, setIsLoading] = React.useState(false);
     const isModalOpen = isOpen && type === "createChannel";
+    const { toast } = useToast();
 
     const form = useForm({
         resolver: zodResolver(schema),
@@ -64,18 +64,28 @@ export default function CreateChannelModal() {
             name: "",
             type: ChannelType.TEXT,
             serverId: param.serverId?.toString(),
+            categoryId: "",
         },
     });
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
             setIsLoading(true);
-            await axiosInstance.post("/channels", values);
+            await axiosInstance.post("/channels", values, {
+                params: {
+                    categoryId: data?.channelCategoryId || null,
+                },
+            });
             form.reset();
             router.refresh();
             onClose();
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                title: "Oops! Something went wrong.",
+                description: error.message,
+                variant: "destructive",
+            });
         } finally {
             setIsLoading(false);
         }
@@ -174,7 +184,7 @@ export default function CreateChannelModal() {
                             <Button className="w-full" disabled={isLoading}>
                                 Create
                                 {isLoading && (
-                                    <Loader className="animate-spin ml-5" />
+                                    <Loader2 className="animate-spin ml-5" />
                                 )}
                             </Button>
                         </DialogFooter>

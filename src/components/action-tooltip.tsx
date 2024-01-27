@@ -6,6 +6,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 interface ActionTooltipProps {
     label: string;
@@ -20,10 +23,19 @@ export const ActionTooltip = ({
     side = "bottom",
     align = "center",
 }: ActionTooltipProps) => {
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+    if (!isMounted)
+        return <Skeleton className="w-4 h-4 rounded-full bg-background" />;
+
     return (
         <TooltipProvider>
             <Tooltip>
-                <TooltipTrigger asChild>{children}</TooltipTrigger>
+                <TooltipTrigger className="cursor-pointer" asChild>
+                    {children}
+                </TooltipTrigger>
                 <TooltipContent side={side} align={align}>
                     <p className="font-semibold text-sm capitalize">
                         {label.toLocaleLowerCase()}

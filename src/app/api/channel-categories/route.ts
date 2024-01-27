@@ -6,8 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
     try {
         const user = await currentProfile();
-        const categoryId = req.nextUrl.searchParams.get("categoryId");
-        const { name, type, serverId } = await req.json();
+        const { name, serverId } = await req.json();
 
         if (!user)
             return NextResponse.json(
@@ -37,31 +36,15 @@ export async function POST(req: NextRequest) {
                 { message: "Unauthorized" },
                 { status: 401 }
             );
-        if (categoryId) {
-            const category = await db.channelCategory.findUnique({
-                where: {
-                    id: categoryId,
-                    serverId: serverId,
-                },
-            });
-            if (!category) {
-                return NextResponse.json(
-                    { message: "Category Not Found" },
-                    { status: 404 }
-                );
-            }
-        }
 
-        const channel = await db.channel.create({
+        const category = await db.channelCategory.create({
             data: {
                 name,
-                type,
                 serverId: serverId,
-                categoryId,
             },
         });
 
-        return NextResponse.json({ data: channel }, { status: 201 });
+        return NextResponse.json({ data: category }, { status: 201 });
     } catch (error: any) {
         console.error("[SERVER_POST]", error);
         return NextResponse.json(

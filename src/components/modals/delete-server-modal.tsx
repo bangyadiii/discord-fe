@@ -44,7 +44,7 @@ export default function DeleteServerModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-            console.log(error);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }

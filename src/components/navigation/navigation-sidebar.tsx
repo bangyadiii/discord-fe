@@ -32,7 +32,6 @@ export default async function NavigationSideBar() {
                 {servers.map((server) => (
                     <div key={server.id} className="mb-4">
                         <NavigationItem
-                            key={server.id}
                             id={server.id}
                             name={server.name}
                             imageUrl={server.imageUrl}

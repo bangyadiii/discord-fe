@@ -13,21 +13,16 @@ export async function POST(req: NextRequest) {
                 { status: 401 }
             );
 
-        const server = await db.server.create({
+        let server = await db.server.create({
             data: {
                 name,
                 imageUrl,
                 ownerId: user.id,
                 inviteCode: crypto.randomUUID(),
-                channels: {
+                channelCategories: {
                     create: [
                         {
-                            name: "general",
-                            type: ChannelType.TEXT,
-                        },
-                        {
-                            name: "general",
-                            type: ChannelType.VOICE,
+                            name: "General",
                         },
                     ],
                 },
@@ -38,6 +33,47 @@ export async function POST(req: NextRequest) {
                             role: MembershipRole.OWNER,
                         },
                     ],
+                },
+            },
+            include: {
+                channelCategories: true,
+            },
+        });
+        server = await db.server.update({
+            where: {
+                id: server.id,
+            },
+            data: {
+                channels: {
+                    create: [
+                        {
+                            name: "general",
+                            type: ChannelType.TEXT,
+                            categoryId: server.channelCategories[0].id,
+                        },
+                        {
+                            name: "general",
+                            type: ChannelType.VOICE,
+                            categoryId: server.channelCategories[0].id,
+                        },
+                    ],
+                },
+            },
+            include: {
+                channelCategories: {
+                    include: {
+                        channels: true,
+                    },
+                },
+                members: {
+                    include: {
+                        user: true,
+                    },
+                },
+                channels: {
+                    include: {
+                        category: true,
+                    },
                 },
             },
         });

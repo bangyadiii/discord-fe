@@ -40,6 +40,11 @@ export default async function ServerIDLayout({
                     createdAt: "asc",
                 },
             },
+            channelCategories: {
+                include: {
+                    channels: true,
+                },
+            },
         },
     });
 

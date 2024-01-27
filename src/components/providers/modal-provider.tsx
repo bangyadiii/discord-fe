@@ -8,6 +8,9 @@ import ManageMember from "@/components/modals/manage-member-modal";
 import CreateChannelModal from "@/components/modals/create-channel-modal";
 import LeaveServerModal from "@/components/modals/leave-server-modal";
 import DeleteServerModal from "@/components/modals/delete-server-modal";
+import CreateChannelCategoryModal from "@/components/modals/create-channel-category-modal";
+import SettingChannelCategoryModal from "@/components/modals/setting-channel-category-modal";
+import SettingChannelModal from "../modals/setting-channel-modal";
 
 export default function ModalProvider() {
     const [isMounted, setIsMounted] = React.useState(false);
@@ -23,6 +26,9 @@ export default function ModalProvider() {
             <InviteModal />
             <ManageMember />
             <CreateChannelModal />
+            <SettingChannelModal />
+            <CreateChannelCategoryModal />
+            <SettingChannelCategoryModal />
             <LeaveServerModal />
             <DeleteServerModal />
         </>
