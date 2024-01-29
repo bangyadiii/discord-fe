@@ -32,7 +32,7 @@ import { Button } from "../ui/button";
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useToast } from "../ui/use-toast";
@@ -63,7 +63,7 @@ export default function CreateChannelModal() {
         defaultValues: {
             name: "",
             type: ChannelType.TEXT,
-            serverId: param.serverId?.toString(),
+            serverId: param?.serverId?.toString() ?? "",
             categoryId: "",
         },
     });

@@ -12,49 +12,58 @@ generator client {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  userId     String   @unique
-  name       String
-  email      String   @unique
-  profileUrl String   @db.Text
-  servers    Server[]
-  members    Member[]
+  id             String @id @default(uuid())
+  name           String
+  email          String @unique
+  provider       String
+  providerUserId String @map("provider_user_id") @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  profileUrl       String          @map("profile_url") @db.Text
+  servers          Server[]
+  members          Member[]
+  sentMessages     DirectMessage[] @relation("sender")
+  receivedMessages DirectMessage[] @relation("receiver")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model Server {
   id                String            @id @default(uuid())
-  name              String
-  imageUrl          String            @db.Text
-  inviteCode        String            @unique
+  name              String            @map("name")
+  imageUrl          String            @map("image_url") @db.Text
+  inviteCode        String            @unique @map("invite_code")
   channelCategories ChannelCategory[]
   channels          Channel[]
 
-  ownerId String
+  ownerId String @map("owner_id")
   owner   User   @relation(fields: [ownerId], references: [id])
 
   members Member[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([ownerId])
+  @@map("servers")
 }
 
 model ChannelCategory {
   id   String @id @default(uuid())
   name String
 
-  serverId String
+  serverId String    @map("server_id")
+  order    Int       @default(0)
   server   Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
   channels Channel[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([serverId])
+  @@map("channel_categories")
 }
 
 enum ChannelType {
@@ -66,16 +75,19 @@ model Channel {
   id         String           @id @default(uuid())
   name       String
   type       ChannelType
-  serverId   String 
-  server     Server           @relation(fields: [serverId], references: [id], onDelete: Cascade) 
-  categoryId String?
+  serverId   String           @map("server_id")
+  server     Server           @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  categoryId String?          @map("category_id")
+  order      Int              @default(0)
   category   ChannelCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  messages   Message[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([serverId])
   @@index([categoryId])
+  @@map("channels")
 }
 
 enum MembershipRole {
@@ -87,12 +99,57 @@ enum MembershipRole {
 
 model Member {
   id       String         @id @default(uuid())
-  role     MembershipRole @default(MEMBER)
-  userId   String
+  role     MembershipRole @default(MEMBER) @map("role")
+  userId   String         @map("user_id")
   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serverId String
+  serverId String         @map("server_id")
   server   Server         @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  messages Message[]
+  joinedAt DateTime       @default(now()) @map("joined_at")
+  leftAt   DateTime?      @map("left_at")
 
   @@index([userId])
   @@index([serverId])
+  @@map("members")
+}
+
+model Message {
+  id      String  @id @default(uuid()) @map("id")
+  content String  @map("content") @db.Text
+  fileUrl String? @map("file_url") @db.Text
+
+  channelId String  @map("channel_id")
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  memberId  String  @map("member_id")
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  readAt    DateTime? @map("read_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([channelId])
+  @@index([memberId])
+  @@map("messages")
+}
+
+model DirectMessage {
+  id      String  @id @default(uuid()) @map("id")
+  content String  @map("content") @db.Text
+  fileUrl String? @map("file_url") @db.Text
+
+  senderId   String @map("sender_id")
+  sender     User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+  receiverId String @map("receiver_id")
+  receiver   User   @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  readAt    DateTime? @map("read_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([receiverId])
+  @@unique([senderId, receiverId])
+
+  @@map("direct_messages")
 }

@@ -24,7 +24,7 @@ import { Button } from "../ui/button";
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 import { Channel, ChannelType } from "@prisma/client";
 import { Loader2, Trash } from "lucide-react";
 import { useToast } from "../ui/use-toast";
@@ -64,7 +64,7 @@ export default function SettingChannelModal() {
             name: data?.channel?.name ?? "",
             type: (data?.channel?.type?.toString() ??
                 ChannelType.TEXT) as ChannelType,
-            serverId: param.serverId?.toString() ?? "",
+            serverId: param?.serverId?.toString() ?? "",
             categoryId: data?.channel?.categoryId || null,
         },
     });
@@ -84,7 +84,7 @@ export default function SettingChannelModal() {
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.patch<{data: Channel}>(
+            const response = await axiosInstance.patch<{ data: Channel }>(
                 `/channels/${data?.channel?.id}`,
                 values,
                 {
@@ -99,7 +99,7 @@ export default function SettingChannelModal() {
             });
             form.reset();
             router.refresh();
-            onOpen('settingChannel', { channel: response.data?.data })
+            onOpen("settingChannel", { channel: response.data?.data });
         } catch (error: any) {
             setIsLoading(false);
             console.error(error);

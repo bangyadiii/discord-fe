@@ -6,7 +6,7 @@ import {
     Server,
 } from "@prisma/client";
 import ServerSideBarHeader from "./server-sidebar-header";
-import { ServerWithRelation } from "../../../types";
+import { ServerWithRelation } from "../../types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Crown, Hash, Mic, ShieldAlert, User } from "lucide-react";
 import ServerSearch from "./server-search";
@@ -15,6 +15,7 @@ import { redirectToSignIn } from "@clerk/nextjs";
 import { Separator } from "../ui/separator";
 import ServerSection from "./server-section";
 import ChannelItem from "../channel/channel-item";
+import UserInformation from "../user-information";
 
 interface ServerSideBarProps {
     server: ServerWithRelation;
@@ -35,7 +36,6 @@ const iconRoleList: Record<MembershipRole, React.ReactElement | null> = {
 export default async function ServerSideBar({ server }: ServerSideBarProps) {
     const user = await currentProfile();
     if (!user) return redirectToSignIn();
-   
 
     const textChannels = server.channels?.filter(
         (channel) => channel.type === ChannelType.TEXT
@@ -91,10 +91,7 @@ export default async function ServerSideBar({ server }: ServerSideBarProps) {
                 {server.channels?.map((channel) => {
                     if (channel.categoryId === null) {
                         return (
-                            <ChannelItem
-                                key={channel.id}
-                                channel={channel}
-                            />
+                            <ChannelItem key={channel.id} channel={channel} />
                         );
                     }
                     return null;
@@ -112,6 +109,9 @@ export default async function ServerSideBar({ server }: ServerSideBarProps) {
                     </div>
                 ))}
             </ScrollArea>
+            <div className="">
+                <UserInformation />
+            </div>
         </div>
     );
 }

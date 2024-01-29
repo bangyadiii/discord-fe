@@ -10,12 +10,12 @@ import {
 } from "../ui/dialog";
 
 import React, { useEffect } from "react";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Check, Copy, RefreshCw } from "lucide-react";
-import { useOrigin } from "../../../hooks/use-origin";
+import { useOrigin } from "../../hooks/use-origin";
 import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { Server } from "@prisma/client";

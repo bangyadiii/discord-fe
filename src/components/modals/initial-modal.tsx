@@ -84,7 +84,7 @@ export default function InitialModal() {
     return (
         <Dialog open>
             <DialogContent className="bg-background p-0 overflow-hidden">
-                <DialogHeader className="pt-8">
+                <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl px-6 text-center font-bold">
                         Customize Your Server
                     </DialogTitle>
@@ -122,13 +122,13 @@ export default function InitialModal() {
                                         <FormItem>
                                             <FormLabel
                                                 htmlFor="name"
-                                                className="font-bold uppercase text-xs text-zinc-500 dark:text-secondary/75"
+                                                className="font-bold uppercase text-xs text-secondary-foreground"
                                             >
                                                 Server Name
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    className="bg-zinc-300 border-0 focus-visible:ring-0 text-black"
+                                                    className="border-0 focus-visible:ring-0 bg-secondary text-secondary-foreground"
                                                     placeholder="Input your server name"
                                                     {...field}
                                                 />

@@ -24,7 +24,7 @@ import { Button } from "../ui/button";
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 import { Loader } from "lucide-react";
 
 const schema = z.object({
@@ -40,7 +40,7 @@ const schema = z.object({
 
 export default function CreateChannelCategoryModal() {
     const router = useRouter();
-    const param = useParams();
+    const params = useParams();
 
     const { isOpen, onClose, type } = useModal();
     const [isLoading, setIsLoading] = React.useState(false);
@@ -50,9 +50,10 @@ export default function CreateChannelCategoryModal() {
         resolver: zodResolver(schema),
         defaultValues: {
             name: "",
-            serverId: param.serverId?.toString(),
+            serverId: params?.serverId.toString() ?? "",
         },
     });
+
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {

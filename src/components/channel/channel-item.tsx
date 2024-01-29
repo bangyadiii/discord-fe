@@ -5,7 +5,7 @@ import { Channel, ChannelType } from "@prisma/client";
 import { Hash, Mic, Settings } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 
 interface ChannelItemProps {
     channel: Channel;
@@ -22,14 +22,14 @@ function ChannelItem({ channel }: ChannelItemProps) {
     const Icon = channelIconMap[channel.type];
 
     const handleClick = () => {
-        router.push(`/servers/${params.serverId}/channels/${channel.id}`);
+        router.push(`/servers/${params?.serverId}/channels/${channel.id}`);
     };
 
     return (
         <button
             className={cn(
                 "group px-2 py-2 w-full hover:bg-background rounded-md flex items-center cursor-pointer gap-x-2 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300",
-                params.channelId === channel.id &&
+                params?.channelId === channel.id &&
                     "text-zinc-600 dark:text-zinc-300"
             )}
             onClick={handleClick}

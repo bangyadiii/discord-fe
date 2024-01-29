@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -7,8 +7,9 @@ import ReactQueryProvider from "@/components/providers/react-query-provider";
 import ModalProvider from "@/components/providers/modal-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { SocketProvider } from "@/components/providers/socket-provider";
 
-const poppins = Poppins({
+const font = Open_Sans({
     subsets: ["latin"],
     weight: ["300", "400", "500", "600", "700", "800"],
 });
@@ -26,7 +27,7 @@ export default function RootLayout({
     return (
         <ClerkProvider>
             <html lang="en" suppressHydrationWarning>
-                <body className={cn("bg-background", poppins.className)}>
+                <body className={cn("bg-background", font.className)}>
                     <ReactQueryProvider>
                         <ThemeProvider
                             attribute="class"
@@ -34,9 +35,11 @@ export default function RootLayout({
                             enableSystem={false}
                             storageKey="discord-clone-theme"
                         >
-                            <ModalProvider />
-                            {children}
-                            <Toaster />
+                            <SocketProvider>
+                                <ModalProvider />
+                                {children}
+                                <Toaster />
+                            </SocketProvider>
                         </ThemeProvider>
                     </ReactQueryProvider>
                 </body>

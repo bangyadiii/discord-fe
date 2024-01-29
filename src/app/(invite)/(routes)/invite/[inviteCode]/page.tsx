@@ -1,6 +1,5 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 interface InvitePageProps {
@@ -10,7 +9,7 @@ interface InvitePageProps {
 }
 export default async function InvitePage({ params }: InvitePageProps) {
     const profile = await currentProfile();
-    if (!profile) return redirectToSignIn();
+    if (!profile) return redirect("/");
     if (!params.inviteCode) return redirect("/");
 
     const existingServer = await db.server.findFirst({

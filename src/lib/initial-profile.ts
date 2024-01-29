@@ -20,7 +20,8 @@ export const initialProfile = async (): Promise<User> => {
             email: user.emailAddresses[0].emailAddress,
             name: user.firstName + " " + user.lastName,
             profileUrl: user.imageUrl,
-            userId: user.id,
+            providerUserId: user.id,
+            provider: "google",
         },
     });
     return newProfile;

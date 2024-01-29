@@ -14,27 +14,13 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "../ui/dialog";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { ModeToggle } from "../ModeToggle";
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
-import FileUpload from "../file-upload";
-import { useRouter } from "next/navigation";
-import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../../hooks/use-modal-store";
-import { ServerWithRelation } from "../../../types";
+
+import React from "react";
+import { useModal } from "../../hooks/use-modal-store";
+import { ServerWithRelation } from "../../types";
 import { ScrollArea } from "../ui/scroll-area";
 import { UserAvatar } from "../user-avatar";
 import { MembershipRole } from "@prisma/client";

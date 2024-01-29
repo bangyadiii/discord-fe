@@ -7,7 +7,7 @@ import {
     MembershipRole,
 } from "@prisma/client";
 import React from "react";
-import { ServerWithRelation } from "../../../types";
+import { ServerWithRelation } from "../../types";
 import { ActionTooltip } from "../action-tooltip";
 import { ChevronDown, Edit, Plus } from "lucide-react";
 import {
@@ -17,7 +17,7 @@ import {
 } from "../ui/collapsible";
 import ChannelItem from "../channel/channel-item";
 import { cn } from "@/lib/utils";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 
 interface ServerSectionProps {
     label?: string;
@@ -39,7 +39,8 @@ function ServerSection({
     category,
 }: ServerSectionProps) {
     const { onOpen, isOpen } = useModal();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
+
     return (
         <Collapsible open={open} onOpenChange={setOpen}>
             <CollapsibleTrigger className="w-full flex justify-between items-center">

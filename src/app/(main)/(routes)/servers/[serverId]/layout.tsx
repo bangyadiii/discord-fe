@@ -41,6 +41,9 @@ export default async function ServerIDLayout({
                 },
             },
             channelCategories: {
+                orderBy: {
+                    createdAt: "asc",
+                },
                 include: {
                     channels: true,
                 },
@@ -51,12 +54,12 @@ export default async function ServerIDLayout({
     if (!server) return redirect("/");
 
     return (
-        <div className="h-full">
+        <div className="h-screen flex overflow-hidden">
             <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
                 <ServerSideBar server={server} />
             </div>
 
-            <main className="h-full md:pl-60">{children}</main>
+            <div className="h-full flex-1 md:pl-60">{children}</div>
         </div>
     );
 }

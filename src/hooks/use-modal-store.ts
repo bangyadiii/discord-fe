@@ -11,7 +11,8 @@ export type ModalType =
     | "createChannelCategory"
     | "settingChannelCategory"
     | "leaveServer"
-    | "deleteServer";
+    | "deleteServer"
+    | "msgFile";
 
 interface ModalData {
     server?: Server;

@@ -26,7 +26,7 @@ import React from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../../hooks/use-modal-store";
+import { useModal } from "../../hooks/use-modal-store";
 import { useToast } from "../ui/use-toast";
 
 const schema = z.object({
