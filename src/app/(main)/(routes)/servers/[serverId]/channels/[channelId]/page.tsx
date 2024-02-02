@@ -64,7 +64,9 @@ async function ChannelPage({ params }: ChannelPageProps) {
                 <ChatHeader
                     label={channel.name}
                     type="channel"
-                    server={server}
+                    data={{
+                        server,
+                    }}
                 />
             </div>
             <div className="h-[calc(100%-50px)]">
