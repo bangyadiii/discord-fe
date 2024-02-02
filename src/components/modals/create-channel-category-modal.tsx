@@ -50,7 +50,7 @@ export default function CreateChannelCategoryModal() {
         resolver: zodResolver(schema),
         defaultValues: {
             name: "",
-            serverId: params?.serverId.toString() ?? "",
+            serverId: params?.serverId?.toString() ?? "",
         },
     });
 

@@ -32,7 +32,7 @@ export default function OnlineStatus({
                     "rounded-full w-2 h-2 inline-block",
                     className,
                     socket.isConnected
-                        ? "bg-green-500 animate-pulse"
+                        ? "bg-green-500"
                         : "bg-zinc-400"
                 )}
             ></div>

@@ -3,6 +3,7 @@ import ChatSection from "../chat/chat-section";
 import MemberSection from "./member-section";
 import { Channel } from "@prisma/client";
 import { ServerWithRelation } from "../../types";
+import VideoSection from "../video/video-section";
 
 interface ChannelSectionProps {
     channel: Channel & {
@@ -13,18 +14,26 @@ interface ChannelSectionProps {
 export default function ChannelSection({ channel }: ChannelSectionProps) {
     return (
         <div className="flex h-full">
-            <div className="w-full md:w-5/6 h-full">
-                <ChatSection
-                    currentChat={channel.name}
-                    chatType="channel"
-                    data={{
-                        channel: channel,
-                    }}
-                />
+            <div className={"h-full flex-1"}>
+                {channel.type === "TEXT" ? (
+                    <ChatSection
+                        currentChat={channel.name}
+                        chatType="channel"
+                        data={{
+                            channel: channel,
+                        }}
+                        messageApiUrl="/api/messages"
+                        pushMessageUrl="/sockets/messages"
+                    />
+                ) : (
+                    <VideoSection />
+                )}
             </div>
-            <div className="w-1/6 hidden md:block h-full">
-                <MemberSection server={channel?.server} />
-            </div>
+            {channel.type === "TEXT" && (
+                <div className="md:w-[320px] hidden md:block h-full">
+                    <MemberSection server={channel?.server} />
+                </div>
+            )}
         </div>
     );
 }
