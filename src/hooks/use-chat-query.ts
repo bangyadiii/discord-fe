@@ -8,7 +8,7 @@ import { useInfiniteQuery } from "react-query";
 interface ChatContext {
     queryKey: string;
     apiUrl: string;
-    paramKey: "channelId" | "userId";
+    paramKey: "channelId" | "opponentUserId";
     paramValue: string;
 }
 
@@ -21,7 +21,7 @@ export default function useChatQuery({
     const { isConnected } = useSocket();
     const params = useParams();
 
-    const fetchMessages = async ({ pageParam = 1 }) => {
+    const fetchMessages = async ({ pageParam }: { pageParam?: string }) => {
         const url = queryString.stringifyUrl(
             {
                 url: apiUrl,
@@ -45,6 +45,6 @@ export default function useChatQuery({
         queryKey: [queryKey],
         queryFn: fetchMessages,
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
-        refetchInterval: isConnected ? false : 5000,
+        refetchInterval: false,
     });
 }

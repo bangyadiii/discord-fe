@@ -10,7 +10,9 @@ import LeaveServerModal from "@/components/modals/leave-server-modal";
 import DeleteServerModal from "@/components/modals/delete-server-modal";
 import CreateChannelCategoryModal from "@/components/modals/create-channel-category-modal";
 import SettingChannelCategoryModal from "@/components/modals/setting-channel-category-modal";
-import SettingChannelModal from "../modals/setting-channel-modal";
+import SettingChannelModal from "@/components/modals/setting-channel-modal";
+import DeleteMessageModal from "@/components/modals/delete-message-modal";
+import ImageChatModal from "@/components/modals/image-chat-modal";
 
 export default function ModalProvider() {
     const [isMounted, setIsMounted] = React.useState(false);
@@ -31,6 +33,8 @@ export default function ModalProvider() {
             <SettingChannelCategoryModal />
             <LeaveServerModal />
             <DeleteServerModal />
+            <DeleteMessageModal />
+            <ImageChatModal />
         </>
     );
 }

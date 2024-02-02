@@ -7,17 +7,17 @@ import {
     MembershipRole,
 } from "@prisma/client";
 import React from "react";
-import { ServerWithRelation } from "../../types";
-import { ActionTooltip } from "../action-tooltip";
+import { ServerWithRelation } from "@/types";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { ChevronDown, Edit, Plus } from "lucide-react";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
-} from "../ui/collapsible";
-import ChannelItem from "../channel/channel-item";
+} from "@/components/ui/collapsible";
+import ChannelItem from "@/components/channel/channel-item";
 import { cn } from "@/lib/utils";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ServerSectionProps {
     label?: string;
@@ -45,14 +45,14 @@ function ServerSection({
         <Collapsible open={open} onOpenChange={setOpen}>
             <CollapsibleTrigger className="w-full flex justify-between items-center">
                 {label && (
-                    <span className="flex-1 flex items-center gap-x-1">
+                    <span className="flex-1 flex items-center gap-x-1 group">
                         <ChevronDown
                             className={cn(
                                 "h-3 w-3 transition",
                                 open ? "rotate-0" : "-rotate-90"
                             )}
                         />
-                        <span className="text-[0.7rem] uppercase font-semibold text-zinc-500 dark:text-zinc-300">
+                        <span className="text-[0.7rem] uppercase font-semibold text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300">
                             {label}
                         </span>
                     </span>

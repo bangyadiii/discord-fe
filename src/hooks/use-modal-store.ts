@@ -12,12 +12,15 @@ export type ModalType =
     | "settingChannelCategory"
     | "leaveServer"
     | "deleteServer"
-    | "msgFile";
+    | "msgFile" 
+    | "deleteMessage"
+    | "imageChat";
 
 interface ModalData {
     server?: Server;
     channel?: Channel;
     channelCategoryId?: string;
+    imageUrl?: string;
 }
 interface ModalStore {
     type: ModalType | null;

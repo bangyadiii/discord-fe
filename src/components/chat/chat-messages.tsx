@@ -4,15 +4,15 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import ChatWelcome from "@/components/chat/chat-welcome";
 import useChatQuery from "@/hooks/use-chat-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, ServerCrash } from "lucide-react";
+import ChatItem from "./chat-item";
 
 interface ChatMessagesProps {
     name: string;
     chatId: string;
     apiUrl: string;
-    socketUrl: string;
     socketQuery: Record<string, string>;
-    paramKey: "channelId" | "userId";
+    paramKey: "channelId" | "opponentUserId";
     paramValue: string;
     type: "channel" | "directMessage";
     className?: string;
@@ -37,15 +37,34 @@ export default function ChatMessages({
         });
     if (status === "loading")
         return (
-            <div className="flex flex-1 items-center justify-center">
-                <Loader2 />
-                Loading..
+            <div className="flex flex-1 flex-col items-center justify-center text-md text-zinc-400 dark:text-zinc-500">
+                <Loader2 className="w-8 h-8 animate-spin mb-3" />
+                Loading...
+            </div>
+        );
+    if (status === "error")
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center text-md text-zinc-400 dark:text-zinc-500">
+                <ServerCrash className="w-8 h-8 mb-3" />
+                Something went wrong
             </div>
         );
     return (
-        <div className={cn("flex-1 flex flex-col overflow-y-auto", className)}>
+        <div
+            className={cn(
+                "flex-1 flex flex-col overflow-y-auto px-5",
+                className
+            )}
+        >
             <div className="flex-1" />
             <ChatWelcome type={type} name={name} />
+            {data?.pages.map((page, i) => (
+                <React.Fragment key={i}>
+                    {page.data.map((message) => (
+                        <ChatItem key={message.id} />
+                    ))}
+                </React.Fragment>
+            ))}
         </div>
     );
 }

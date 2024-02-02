@@ -149,7 +149,7 @@ model DirectMessage {
   deletedAt DateTime? @map("deleted_at")
 
   @@index([receiverId])
-  @@unique([senderId, receiverId])
+  @@index([senderId, receiverId])
 
   @@map("direct_messages")
 }
