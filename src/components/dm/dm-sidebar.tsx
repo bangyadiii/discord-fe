@@ -1,4 +1,3 @@
-import { DirectMessageWithRelation } from "@/types";
 import React from "react";
 import DMSideBarHeader from "./dm-sidebar-header";
 import { ScrollArea } from "../ui/scroll-area";
@@ -9,13 +8,11 @@ import { ActionTooltip } from "../action-tooltip";
 import { User } from "@prisma/client";
 
 interface DMSideBarProps {
-    conversations: DirectMessageWithRelation[] | null;
-    opponentUser: User;
+    partners: User[];
 }
 
 export default function DMSideBar({
-    conversations,
-    opponentUser,
+    partners
 }: DMSideBarProps) {
     return (
         <div className="flex flex-col h-full w-full bg-secondary">
@@ -31,7 +28,7 @@ export default function DMSideBar({
                         </button>
                     </ActionTooltip>
                 </div>
-                {!conversations || conversations?.length! === 0 ? (
+                {!partners || partners?.length! === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full">
                         <span className="text-primary-foreground text-sm font-semibold">
                             No conversations
@@ -41,12 +38,11 @@ export default function DMSideBar({
                         </span>
                     </div>
                 ) : (
-                    conversations.map((conversation) => {
+                    partners.map((partner) => {
                         return (
                             <DMItem
-                                key={conversation.id}
-                                opponentUser={opponentUser}
-                                conversation={conversation}
+                                key={`dm-${partner.id}`}
+                                partner={partner}
                             />
                         );
                     })

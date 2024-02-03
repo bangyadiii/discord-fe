@@ -23,7 +23,7 @@ export default function ChannelSection({ channel }: ChannelSectionProps) {
                             channel: channel,
                         }}
                         messageApiUrl="/api/messages"
-                        pushMessageUrl="/sockets/messages"
+                        pushMessageUrl="/messages"
                     />
                 ) : (
                     <VideoSection />

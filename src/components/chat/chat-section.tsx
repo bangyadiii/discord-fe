@@ -19,7 +19,7 @@ export default function ChatSection({
     chatType,
     data,
     messageApiUrl = "/api/messages",
-    pushMessageUrl = "/sockets/messages",
+    pushMessageUrl = "/messages",
 }: ChatSectionProps) {
     let paramKey: "channelId" | "opponentUserId" = "channelId";
     if (chatType == "channel" && !data?.channel) return null;
