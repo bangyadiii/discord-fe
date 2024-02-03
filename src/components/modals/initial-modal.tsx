@@ -1,7 +1,7 @@
 "use client";
 
-import { set, useForm } from "react-hook-form";
-import { Loader2, LoaderIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { Loader2 } from "lucide-react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,7 +11,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import {
     Form,
     FormControl,
@@ -19,7 +19,7 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useEffect } from "react";
@@ -28,11 +28,7 @@ import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-
-const schema = z.object({
-    name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
-    imageUrl: z.string().url(),
-});
+import { inputServerValidator } from "@/lib/validations";
 
 export default function InitialModal() {
     const [mounted, setMounted] = React.useState(false);
@@ -41,7 +37,7 @@ export default function InitialModal() {
     const router = useRouter();
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(inputServerValidator),
         defaultValues: {
             name: "",
             imageUrl: "",
@@ -51,7 +47,7 @@ export default function InitialModal() {
         setMounted(true);
     }, []);
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof inputServerValidator>) => {
         try {
             setIsLoading(true);
             await axiosInstance.post("/servers", values);
@@ -59,8 +55,6 @@ export default function InitialModal() {
             router.refresh();
             window.location.reload();
         } catch (error) {
-            setIsLoading(false);
-            console.log(error);
             toast({
                 title: "Something went wrong",
                 description: "Your server could not be created.",

@@ -18,25 +18,15 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/use-modal-store";
 import { Loader2 } from "lucide-react";
-
-const schema = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
-    serverId: z.string(),
-});
+import { createChannelCategoryValidator } from "@/lib/validations";
 
 export default function SettingChannelCategoryModal() {
     const router = useRouter();
@@ -47,14 +37,14 @@ export default function SettingChannelCategoryModal() {
     const isModalOpen = isOpen && type === "settingChannelCategory";
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(createChannelCategoryValidator),
         defaultValues: {
             name: "",
             serverId: params?.serverId?.toString() ?? "",
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof createChannelCategoryValidator>) => {
         try {
             setIsLoading(true);
             await axiosInstance.patch(

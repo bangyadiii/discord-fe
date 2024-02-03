@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Loader2, LoaderIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,7 +11,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import {
     Form,
     FormControl,
@@ -19,45 +19,39 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import React from "react";
-import FileUpload from "../file-upload";
+import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
-import { useToast } from "../ui/use-toast";
-
-const schema = z.object({
-    name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
-    imageUrl: z.string().url(),
-});
+import { useModal } from "@/hooks/use-modal-store";
+import { useToast } from "@/components/ui/use-toast";
+import { inputServerValidator } from "@/lib/validations";
 
 export default function CreateServerModal() {
     const router = useRouter();
     const { isOpen, onClose, type } = useModal();
-    const [isLoading, setIsLoading] = React.useState(false);
     const isModalOpen = isOpen && type === "createServer";
     const { toast } = useToast();
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(inputServerValidator),
         defaultValues: {
             name: "",
             imageUrl: "",
         },
     });
+    const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof inputServerValidator>) => {
         try {
-            setIsLoading(true);
             await axiosInstance.post("/servers", values);
             form.reset();
             router.refresh();
             onClose();
         } catch (error: any) {
-            setIsLoading(false);
             console.log(error);
             toast({
                 title: "Oops! Something went wrong.",
@@ -65,8 +59,6 @@ export default function CreateServerModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-        } finally {
-            setIsLoading(false);
         }
     };
     const handleClose = () => {

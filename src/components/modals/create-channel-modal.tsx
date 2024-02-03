@@ -6,11 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import {
     Select,
     SelectContent,
@@ -26,29 +25,17 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { useToast } from "../ui/use-toast";
-
-const schema = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
-    type: z.nativeEnum(ChannelType),
-    serverId: z.string(),
-    categoryId: z.string().nullable(),
-});
+import { useToast } from "@/components/ui/use-toast";
+import { saveChannelValidator } from "@/lib/validations";
 
 export default function CreateChannelModal() {
     const router = useRouter();
@@ -59,7 +46,7 @@ export default function CreateChannelModal() {
     const { toast } = useToast();
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(saveChannelValidator),
         defaultValues: {
             name: "",
             type: ChannelType.TEXT,
@@ -68,7 +55,7 @@ export default function CreateChannelModal() {
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof saveChannelValidator>) => {
         try {
             setIsLoading(true);
             await axiosInstance.post("/channels", values, {

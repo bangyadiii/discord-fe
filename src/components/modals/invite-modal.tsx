@@ -3,19 +3,17 @@
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 
-import React, { useEffect } from "react";
-import { useModal } from "../../hooks/use-modal-store";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import React from "react";
+import { useModal } from "@/hooks/use-modal-store";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Check, Copy, RefreshCw } from "lucide-react";
-import { useOrigin } from "../../hooks/use-origin";
+import { useOrigin } from "@/hooks/use-origin";
 import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { Server } from "@prisma/client";

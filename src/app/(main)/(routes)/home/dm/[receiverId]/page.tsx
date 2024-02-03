@@ -4,7 +4,6 @@ import UserDetail from "@/components/dm/user-detail";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
-import { User } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 interface ConversationPageProps {

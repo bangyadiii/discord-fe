@@ -6,10 +6,11 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Plus, Smile } from "lucide-react";
+import { Plus } from "lucide-react";
 import qs from "query-string";
 import { axiosInstance } from "@/lib/axios";
 import EmojiPicker from "@/components/emoji-picker";
+import { chatInputValidator } from "@/lib/validations";
 
 interface ChatInputProps {
     apiURL: string;
@@ -18,25 +19,21 @@ interface ChatInputProps {
     type: "channel" | "directMessage";
 }
 
-const formSchema = z.object({
-    content: z.string().min(1).max(2000),
-});
-
 export default function ChatInput({
     apiURL,
     query,
     name,
     type,
 }: ChatInputProps) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof chatInputValidator>>({
+        resolver: zodResolver(chatInputValidator),
         defaultValues: {
             content: "",
         },
     });
     const isLoading = form.formState.isSubmitting;
 
-    const handleOnSubmit = async (data: z.infer<typeof formSchema>) => {
+    const handleOnSubmit = async (data: z.infer<typeof chatInputValidator>) => {
         try {
             const url = qs.stringifyUrl({
                 url: apiURL,

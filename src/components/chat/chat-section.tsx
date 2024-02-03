@@ -55,10 +55,11 @@ export default function ChatSection({
                     name={data?.opponentUser?.name!}
                     type={chatType}
                     apiURL={pushMessageUrl}
-                    query={{
-                        channelId: data?.channel?.id,
-                        serverId: data?.channel?.serverId,
-                    }}
+                    query={
+                        chatType === "channel"
+                            ? { channelId: data?.channel?.id }
+                            : { opponentUserId: data?.opponentUser?.id }
+                    }
                 />
             </div>
         </div>

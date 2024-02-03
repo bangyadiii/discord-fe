@@ -7,15 +7,14 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 
 import React from "react";
-import { useModal } from "../../hooks/use-modal-store";
-import { Button } from "../ui/button";
+import { useModal } from "@/hooks/use-modal-store";
+import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/axios";
-import { Server } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function DeleteServerModal() {
     const { isOpen, onClose, type, data, onOpen } = useModal();
