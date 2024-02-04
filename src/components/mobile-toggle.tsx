@@ -4,23 +4,21 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import NavigationSideBar from "./navigation/navigation-sidebar";
 import ServerSideBar from "./server/server-sidebar";
-import { DirectMessageWithRelation, ServerWithRelation } from "../types";
+import { ServerWithRelation } from "@/types";
 import { User } from "@prisma/client";
 import DMSideBar from "./dm/dm-sidebar";
-import { type } from "os";
 
 interface MobileToggleProps {
     type: "channel" | "directMessage";
     data: {
         server?: ServerWithRelation;
-        conversations?: DirectMessageWithRelation[];
-        opponentUser?: User;
+        partners?: User[];
     };
 }
 
 export default function MobileToggle({
     type,
-    data: { server, conversations, opponentUser },
+    data: { server, partners },
 }: MobileToggleProps) {
     return (
         <Sheet>
@@ -36,10 +34,7 @@ export default function MobileToggle({
                 {type == "channel" && server ? (
                     <ServerSideBar server={server} />
                 ) : (
-                    <DMSideBar
-                        opponentUser={opponentUser!}
-                        conversations={conversations!}
-                    />
+                    <DMSideBar partners={partners!} />
                 )}
             </SheetContent>
         </Sheet>

@@ -1,14 +1,14 @@
 "use client";
 
-import { MembershipRole, Server } from "@prisma/client";
-import { ServerWithRelation } from "../../types";
+import { MembershipRole } from "@prisma/client";
+import { ServerWithRelation } from "@/types";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
     ChevronDown,
     FolderPlus,
@@ -16,11 +16,10 @@ import {
     PlusCircle,
     Settings,
     Trash,
-    UserPlus,
     UserRoundPlus,
     Users,
 } from "lucide-react";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ServerSideBarHeaderProps {
     server: ServerWithRelation;

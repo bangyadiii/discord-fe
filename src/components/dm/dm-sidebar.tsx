@@ -1,10 +1,10 @@
 import React from "react";
 import DMSideBarHeader from "./dm-sidebar-header";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
-import UserInformation from "../user-information";
+import UserInformation from "@/components/user-information";
 import DMItem from "./dm-item";
-import { ActionTooltip } from "../action-tooltip";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { User } from "@prisma/client";
 
 interface DMSideBarProps {

@@ -8,7 +8,7 @@ interface ChatSectionProps {
     chatType: "channel" | "directMessage";
     data?: {
         channel?: Channel;
-        opponentUser?: User;
+        receiverUser?: User;
     };
     messageApiUrl?: string;
     pushMessageUrl?: string;
@@ -21,11 +21,11 @@ export default function ChatSection({
     messageApiUrl = "/api/messages",
     pushMessageUrl = "/messages",
 }: ChatSectionProps) {
-    let paramKey: "channelId" | "opponentUserId" = "channelId";
+    let paramKey: "channelId" | "receiverUserId" = "channelId";
     if (chatType == "channel" && !data?.channel) return null;
-    if (chatType == "directMessage" && !data?.opponentUser) return null;
+    if (chatType == "directMessage" && !data?.receiverUser) return null;
     if (chatType == "directMessage") {
-        paramKey = "opponentUserId";
+        paramKey = "receiverUserId";
     }
     return (
         <div className="h-full w-full flex flex-col justify-between">
@@ -33,11 +33,7 @@ export default function ChatSection({
                 chatId={data?.channel?.id!}
                 type={chatType}
                 apiUrl={messageApiUrl}
-                name={
-                    chatType === "channel"
-                        ? data?.channel?.name!
-                        : data?.opponentUser?.name!
-                }
+                name={currentChat}
                 socketQuery={{
                     channelId: data?.channel?.id!,
                     serverId: data?.channel?.serverId!,
@@ -46,19 +42,19 @@ export default function ChatSection({
                 paramValue={
                     paramKey == "channelId"
                         ? data?.channel?.id!
-                        : data?.opponentUser?.id!
+                        : data?.receiverUser?.id!
                 }
             />
 
             <div className="h-[80px] w-full flex justify-center items-start">
                 <ChatInput
-                    name={data?.opponentUser?.name!}
+                    name={data?.receiverUser?.name!}
                     type={chatType}
                     apiURL={pushMessageUrl}
                     query={
                         chatType === "channel"
                             ? { channelId: data?.channel?.id }
-                            : { opponentUserId: data?.opponentUser?.id }
+                            : { receiverUserId: data?.receiverUser?.id }
                     }
                 />
             </div>

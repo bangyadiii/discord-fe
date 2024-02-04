@@ -1,14 +1,13 @@
 import { useSocket } from "@/components/providers/socket-provider";
+import { axiosInstance } from "@/lib/axios";
 import { Message } from "@prisma/client";
-import axios from "axios";
-import { useParams } from "next/navigation";
 import queryString from "query-string";
 import { useInfiniteQuery } from "react-query";
 
 interface ChatContext {
     queryKey: string;
     apiUrl: string;
-    paramKey: "channelId" | "opponentUserId";
+    paramKey: "channelId" | "receiverUserId";
     paramValue: string;
 }
 
@@ -19,7 +18,6 @@ export default function useChatQuery({
     paramValue,
 }: ChatContext) {
     const { isConnected } = useSocket();
-    const params = useParams();
 
     const fetchMessages = async ({ pageParam }: { pageParam?: string }) => {
         const url = queryString.stringifyUrl(
@@ -33,7 +31,7 @@ export default function useChatQuery({
             { skipNull: true }
         );
 
-        const res = await axios.get<{
+        const res = await axiosInstance.get<{
             message?: string;
             data: Message[];
             nextCursor: string | null;

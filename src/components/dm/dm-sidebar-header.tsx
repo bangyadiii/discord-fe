@@ -1,7 +1,5 @@
 "use client";
 
-import { DirectMessageWithRelation, ServerWithRelation } from "../../types";
-
 import { Search } from "lucide-react";
 import { useModal } from "../../hooks/use-modal-store";
 import { useEffect, useState } from "react";
@@ -31,16 +29,13 @@ export default function DMSideBarHeader() {
     }, []);
 
     const handleOnClick = () => {
-        console.log("hello world");
-        return;
+        setOpen(true);
     };
 
     return (
         <div className="w-full px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 ">
             <button
-                onClick={() => {
-                    setOpen(true);
-                }}
+                onClick={handleOnClick}
                 className="group p-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition-all"
             >
                 <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition" />

@@ -103,7 +103,6 @@ export default async function ServerSideBar({ server }: ServerSideBarProps) {
                             role={role}
                             channelType={ChannelType.TEXT}
                             sectionType="channel"
-                            server={server}
                             category={category}
                         />
                     </div>

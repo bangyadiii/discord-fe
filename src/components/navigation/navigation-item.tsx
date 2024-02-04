@@ -1,7 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { ActionTooltip } from "../action-tooltip";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { cn } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
@@ -25,9 +24,7 @@ export default function NavigationItem({
     return (
         <ActionTooltip label={name} align="center" side="right">
             <button
-                onClick={() => {
-                    onClick();
-                }}
+                onClick={onClick}
                 className="group relative flex items-center"
             >
                 <div

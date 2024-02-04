@@ -7,9 +7,8 @@ import {
     MembershipRole,
 } from "@prisma/client";
 import React from "react";
-import { ServerWithRelation } from "@/types";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { ChevronDown, Edit, Plus } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import {
     Collapsible,
     CollapsibleContent,
@@ -24,7 +23,6 @@ interface ServerSectionProps {
     role?: MembershipRole;
     channelType: ChannelType;
     sectionType?: "channel" | "member";
-    server: ServerWithRelation;
     category?: ChannelCategory & {
         channels: Channel[] | null;
     };
@@ -33,12 +31,10 @@ interface ServerSectionProps {
 function ServerSection({
     label,
     role,
-    channelType,
     sectionType,
-    server,
     category,
 }: ServerSectionProps) {
-    const { onOpen, isOpen } = useModal();
+    const { onOpen } = useModal();
     const [open, setOpen] = React.useState(true);
 
     return (

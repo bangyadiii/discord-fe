@@ -1,9 +1,9 @@
 import React from "react";
-import ChatSection from "../chat/chat-section";
+import ChatSection from "@/components/chat/chat-section";
 import MemberSection from "./member-section";
 import { Channel } from "@prisma/client";
-import { ServerWithRelation } from "../../types";
-import VideoSection from "../video/video-section";
+import { ServerWithRelation } from "@/types";
+import VideoSection from "@/components/video/video-section";
 
 interface ChannelSectionProps {
     channel: Channel & {
@@ -22,7 +22,7 @@ export default function ChannelSection({ channel }: ChannelSectionProps) {
                         data={{
                             channel: channel,
                         }}
-                        messageApiUrl="/api/messages"
+                        messageApiUrl="/messages"
                         pushMessageUrl="/messages"
                     />
                 ) : (

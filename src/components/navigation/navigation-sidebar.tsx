@@ -1,11 +1,11 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { Separator } from "../ui/separator";
-import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import NavigationAction from "./navigation-action";
 import NavigationItem from "./navigation-item";
-import { ModeToggle } from "../ModeToggle";
+import { ModeToggle } from "@/components/ModeToggle";
 import { UserButton } from "@clerk/nextjs";
 import NavigationDM from "./navigation-dm";
 
@@ -26,7 +26,7 @@ export default async function NavigationSideBar() {
 
     return (
         <div className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-zinc-200 dark:bg-[#1E1F22] py-3">
-            <NavigationDM user={user} />
+            <NavigationDM />
             <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
             <ScrollArea className="flex-1 w-full">
                 {servers.map((server) => (

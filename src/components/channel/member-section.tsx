@@ -1,12 +1,12 @@
 import React from "react";
-import { ScrollArea } from "../ui/scroll-area";
-import { ServerWithRelation } from "../../types";
-import { UserAvatar } from "../user-avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ServerWithRelation } from "@/types";
+import { UserAvatar } from "@/components/user-avatar";
 import { currentProfile } from "@/lib/current-profile";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import OnlineStatus from "../online-status";
-import { Separator } from "../ui/separator";
-import ChatInput from "../chat/chat-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import OnlineStatus from "@/components/online-status";
+import { Separator } from "@/components/ui/separator";
+import ChatInput from "@/components/chat/chat-input";
 
 interface MemberSectionProps {
     server?: ServerWithRelation;
@@ -69,9 +69,10 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                             name={member?.user?.name!}
                                             type="directMessage"
                                             apiURL="/dm"
-                                            query={{ 
-                                                opponentUserId: member?.user?.id,
-                                             }}
+                                            query={{
+                                                receiverUserId:
+                                                    member?.user?.id,
+                                            }}
                                         />
                                     </div>
                                 </div>

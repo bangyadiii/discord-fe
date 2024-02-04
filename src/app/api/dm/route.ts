@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
             );
 
         const qs = new URL(req.url).searchParams;
-        const opponentUserId = qs.get("opponentUserId");
+        const receiverUserId = qs.get("receiverUserId");
         const cursor = qs.get("cursor");
 
-        if (!opponentUserId)
+        if (!receiverUserId)
             return NextResponse.json(
                 { message: "Opponent user id is required" },
                 { status: 400 }
@@ -36,10 +36,10 @@ export async function GET(req: NextRequest) {
                     OR: [
                         {
                             senderId: user.id,
-                            receiverId: opponentUserId,
+                            receiverId: receiverUserId,
                         },
                         {
-                            senderId: opponentUserId,
+                            senderId: receiverUserId,
                             receiverId: user.id,
                         },
                     ],
@@ -59,10 +59,10 @@ export async function GET(req: NextRequest) {
                     OR: [
                         {
                             senderId: user.id,
-                            receiverId: opponentUserId,
+                            receiverId: receiverUserId,
                         },
                         {
-                            senderId: opponentUserId,
+                            senderId: receiverUserId,
                             receiverId: user.id,
                         },
                     ],
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
 
-        if (!qs.has("opponentUserId"))
+        if (!qs.has("receiverUserId"))
             return NextResponse.json(
                 { message: "Receiver ID is required" },
                 { status: 400 }
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
             data: {
                 content: content,
                 senderId: user.id,
-                receiverId: qs.get("opponentUserId")!,
+                receiverId: qs.get("receiverUserId")!,
             },
             include: {
                 sender: true,

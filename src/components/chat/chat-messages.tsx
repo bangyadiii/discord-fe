@@ -4,15 +4,16 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import ChatWelcome from "@/components/chat/chat-welcome";
 import useChatQuery from "@/hooks/use-chat-query";
-import { Loader2, ServerCrash } from "lucide-react";
+import { ServerCrash } from "lucide-react";
 import ChatItem from "./chat-item";
+import ChatMessagesSkeleton from "./chat-messages-skeleton";
 
 interface ChatMessagesProps {
     name: string;
     chatId: string;
     apiUrl: string;
     socketQuery: Record<string, string>;
-    paramKey: "channelId" | "opponentUserId";
+    paramKey: "channelId" | "receiverUserId";
     paramValue: string;
     type: "channel" | "directMessage";
     className?: string;
@@ -35,11 +36,10 @@ export default function ChatMessages({
             paramKey,
             paramValue,
         });
-    if (status === "loading")
+    if (status == "loading")
         return (
-            <div className="flex flex-1 flex-col items-center justify-center text-md text-zinc-400 dark:text-zinc-500">
-                <Loader2 className="w-8 h-8 animate-spin mb-3" />
-                Loading...
+            <div className="flex-1">
+                <ChatMessagesSkeleton />
             </div>
         );
     if (status === "error")

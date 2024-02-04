@@ -1,14 +1,14 @@
 import React from "react";
-import { UserAvatar } from "../user-avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { User } from "@prisma/client";
-import OnlineStatus from "../online-status";
-import { Separator } from "../ui/separator";
+import OnlineStatus from "@/components/online-status";
+import { Separator } from "@/components/ui/separator";
 
 interface UserDetailProps {
-    opponentUser: User;
+    receiverUser: User;
 }
 
-export default function UserDetail({ opponentUser }: UserDetailProps) {
+export default function UserDetail({ receiverUser }: UserDetailProps) {
     return (
         <div className="flex flex-col gap-y-1 ">
             <div className="relative h-32">
@@ -17,18 +17,18 @@ export default function UserDetail({ opponentUser }: UserDetailProps) {
                 ></div>
                 <div className="px-6 py-4 relative w-14 h-14 md:h-20 md:w-20">
                     <UserAvatar
-                        src={opponentUser.profileUrl!!}
+                        src={receiverUser.profileUrl!!}
                         className="w-14 h-14 md:h-20 md:w-20 ring-[6px] ring-secondary"
                     />
                     <OnlineStatus className="absolute -bottom-3 -right-5 w-4 h-4 ring-[6px] ring-secondary" />
                 </div>
             </div>
             <div className="bg-zinc-900 mx-4 mb-4 rounded-md p-3 flex flex-col gap-y-1">
-                <span className="font-semibold">{opponentUser?.name!}</span>
+                <span className="font-semibold">{receiverUser?.name!}</span>
                 <Separator />
                 <p className="text-[10px] text-bold ">MEMBER SINCE</p>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                    {new Date(opponentUser?.createdAt!!).toLocaleDateString()}
+                    {new Date(receiverUser?.createdAt!!).toLocaleDateString()}
                 </p>
             </div>
         </div>

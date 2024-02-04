@@ -14,13 +14,11 @@ interface ChannelPageProps {
     };
 }
 
-async function ChannelPage({ params }: ChannelPageProps) {
-    const profile = await currentProfile();
-    if (!profile) return redirectToSignIn();
-    const channel = await db.channel.findUnique({
+async function getCurrentChannel(serverId: string, channelId: string) {
+    return await db.channel.findUnique({
         where: {
-            id: params?.channelId,
-            serverId: params?.serverId,
+            id: channelId,
+            serverId: serverId,
         },
         include: {
             server: {
@@ -47,6 +45,17 @@ async function ChannelPage({ params }: ChannelPageProps) {
             },
         },
     });
+}
+
+async function ChannelPage({ params }: ChannelPageProps) {
+    const profile = await currentProfile();
+    if (!profile) return redirectToSignIn();
+    if (!params?.serverId || !params?.channelId) return redirect("/");
+
+    const channel = await getCurrentChannel(
+        params?.serverId,
+        params?.channelId
+    );
 
     const member = await db.member.findFirst({
         where: {
