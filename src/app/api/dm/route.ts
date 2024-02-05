@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
                             receiverId: user.id,
                         },
                     ],
+                    deletedAt: null,
                 },
                 include: {
                     sender: true,
@@ -66,6 +67,7 @@ export async function GET(req: NextRequest) {
                             receiverId: user.id,
                         },
                     ],
+                    deletedAt: null,
                 },
                 include: {
                     sender: true,

@@ -1,13 +1,15 @@
 import { useSocket } from "@/components/providers/socket-provider";
 import { axiosInstance } from "@/lib/axios";
-import { Message } from "@prisma/client";
+import { DirectMessageWithRelation, MessageWithRelation } from "@/types";
 import queryString from "query-string";
 import { useInfiniteQuery } from "react-query";
+
+type ParamKey = "channelId" | "receiverUserId";
 
 interface ChatContext {
     queryKey: string;
     apiUrl: string;
-    paramKey: "channelId" | "receiverUserId";
+    paramKey: ParamKey;
     paramValue: string;
 }
 
@@ -15,7 +17,7 @@ export default function useChatQuery({
     queryKey,
     apiUrl,
     paramKey,
-    paramValue,
+    paramValue
 }: ChatContext) {
     const { isConnected } = useSocket();
 
@@ -33,7 +35,7 @@ export default function useChatQuery({
 
         const res = await axiosInstance.get<{
             message?: string;
-            data: Message[];
+            data: MessageWithRelation[] | DirectMessageWithRelation[];
             nextCursor: string | null;
         }>(url);
         return res.data;

@@ -20,6 +20,7 @@ interface ModalData {
     server?: Server;
     channel?: Channel;
     channelCategoryId?: string;
+    msgUrl?: string;
     imageUrl?: string;
 }
 interface ModalStore {

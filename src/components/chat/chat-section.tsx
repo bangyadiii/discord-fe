@@ -18,7 +18,7 @@ export default function ChatSection({
     currentChat,
     chatType,
     data,
-    messageApiUrl = "/api/messages",
+    messageApiUrl = "/messages",
     pushMessageUrl = "/messages",
 }: ChatSectionProps) {
     let paramKey: "channelId" | "receiverUserId" = "channelId";
@@ -30,18 +30,14 @@ export default function ChatSection({
     return (
         <div className="h-full w-full flex flex-col justify-between">
             <ChatMessages
-                chatId={data?.channel?.id!}
+                partner={data?.receiverUser}
+                channel={data?.channel}
                 type={chatType}
                 apiUrl={messageApiUrl}
-                name={currentChat}
-                socketQuery={{
-                    channelId: data?.channel?.id!,
-                    serverId: data?.channel?.serverId!,
-                }}
                 paramKey={paramKey}
                 paramValue={
                     paramKey == "channelId"
-                        ? data?.channel?.id!
+                        ?  data?.channel?.id!
                         : data?.receiverUser?.id!
                 }
             />

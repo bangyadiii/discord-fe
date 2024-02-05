@@ -15,8 +15,8 @@ export default function ChatMessagesSkeleton() {
                 <Skeleton className="w-10 h-10 rounded-full" />
                 <div className="gap-y-2 ml-4">
                     <Skeleton className="w-24 h-5 mb-2" />
-                    <Skeleton className="w-[250px] h-10 mb-2" />
-                    <Skeleton className="w-[500px] h-[350px] mb-2" />
+                    <Skeleton className="w-5/6 md:w-[250px] h-10 mb-2" />
+                    <Skeleton className="w-full md:w-[500px] aspect-video mb-2" />
                 </div>
             </div>
             <div className="flex gap-y-2 w-full">
@@ -30,14 +30,14 @@ export default function ChatMessagesSkeleton() {
                 <Skeleton className="w-10 h-10 rounded-full" />
                 <div className="gap-y-2 ml-4">
                     <Skeleton className="w-24 h-5 mb-2" />
-                    <Skeleton className="w-[300px] h-9 mb-2" />
+                    <Skeleton className="w-full md:w-[300px] h-9 mb-2" />
                 </div>
             </div>
             <div className="flex gap-y-2 w-full">
                 <Skeleton className="w-10 h-10 rounded-full" />
                 <div className="gap-y-2 ml-4">
                     <Skeleton className="w-24 h-5 mb-2" />
-                    <Skeleton className="w-[340px] h-[120px] mb-2" />
+                    <Skeleton className="w-full md:w-[340px] aspect-video mb-2" />
                 </div>
             </div>
         </div>

@@ -54,7 +54,7 @@ async function getServer(
             },
             channels: {
                 orderBy: {
-                    createdAt: "asc",
+                    order: "asc",
                 },
             },
             channelCategories: {

@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
                 },
                 where: {
                     channelId,
+                    deletedAt: null,
                 },
                 include: {
                     member: {
@@ -49,6 +50,7 @@ export async function GET(req: NextRequest) {
                 take: MESSAGES_BATCH,
                 where: {
                     channelId,
+                    deletedAt: null,
                 },
                 include: {
                     member: {
@@ -80,12 +82,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    console.log("test");
     try {
         const user = await currentProfile();
         const { content, fileUrl } = await req.json();
         const qs = new URL(req.url).searchParams;
-        const serverId = qs.get("serverId");
         const channelId = qs.get("channelId");
 
         if (!user) {
@@ -97,14 +97,6 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (!serverId) {
-            return NextResponse.json(
-                {
-                    message: "Server ID required",
-                },
-                { status: 400 }
-            );
-        }
         if (!channelId) {
             return NextResponse.json(
                 {
@@ -121,42 +113,33 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const server = await db.server.findFirst({
-            where: {
-                id: serverId as string,
-                members: {
-                    some: {
-                        userId: user.id,
-                    },
-                },
-            },
-            include: {
-                members: true,
-            },
-        });
-        if (!server) {
-            return NextResponse.json(
-                { message: "Server not found" },
-                { status: 404 }
-            );
-        }
-        const member = server.members.find((m) => m.userId === user.id);
-        if (!member) {
-            return NextResponse.json(
-                { message: "Member invalid" },
-                { status: 404 }
-            );
-        }
         const channel = await db.channel.findFirst({
             where: {
                 id: channelId as string,
-                serverId: serverId as string,
+            },
+            include: {
+                server: {
+                    include: {
+                        members: true,
+                    },
+                },
             },
         });
+
         if (!channel) {
             return NextResponse.json(
                 { message: "Channel not found" },
                 { status: 404 }
+            );
+        }
+
+        const member = channel.server.members.find(
+            (member) => member.userId == user.id
+        );
+        if (!member) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
             );
         }
 
@@ -167,18 +150,11 @@ export async function POST(req: NextRequest) {
                 channelId: channelId,
                 memberId: member.id,
             },
-            include: {
-                member: {
-                    include: {
-                        user: true,
-                    },
-                },
-            },
         });
 
         return NextResponse.json({ data: message }, { status: 201 });
     } catch (error: any) {
-        console.log("SOCKET_ERROR: ", error);
+        console.log("POST_MESSAGE", error);
         return NextResponse.json(
             {
                 message: error.message || "Internal Error",

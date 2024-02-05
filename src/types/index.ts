@@ -26,6 +26,11 @@ export type DirectMessageWithRelation = DirectMessage & {
     receiver?: User;
 };
 
+export type MessageWithRelation = Message & {
+    member?: Member & { user?: User };
+    channel?: Channel;
+};
+
 export type NextApiResponseServerIO = NextApiResponse & {
     socket: Socket & {
         server: NetServer & {

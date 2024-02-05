@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
 import { useModal } from "@/hooks/use-modal-store";
 
@@ -16,9 +16,9 @@ function ImageChatModal() {
                 <div className="relative">
                     {data?.imageUrl ? (
                         <Image
-                            src={data?.imageUrl}
-                            width={1000}
-                            height={1000}
+                            src={data.imageUrl}
+                            width={800}
+                            height={800}
                             alt="image-chat"
                         />
                     ) : (
@@ -27,7 +27,7 @@ function ImageChatModal() {
                         </div>
                     )}
                     <a
-                        href="https://utfs.io/f/e24092b9-bb22-433b-a02b-f7faba9e6912-ivih5g.jpg"
+                        href={data?.imageUrl || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute -bottom-7 left-0"

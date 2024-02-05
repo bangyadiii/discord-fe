@@ -23,7 +23,7 @@ export default function ChatHeader({ label, type, data }: ChatHeaderProps) {
             {type === "channel" ? (
                 <Hash className="mr-2 w-6 h-6 text-zinc-500 dark:text-zinc-400" />
             ): (
-                <UserAvatar src={data.partners![0].profileUrl} className="w-2 h-2 md:w-[22px] md:h-[22px] mr-2" />
+                <UserAvatar src={data.partners![0].profileUrl} className="w-[22px] h-[22px] md:w-[22px] md:h-[22px] mr-2" />
             )}
             {label}
         </div>

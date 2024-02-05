@@ -19,7 +19,7 @@ export default function DMSideBar({
             <DMSideBarHeader />
             <ScrollArea className="flex-1 px-3">
                 <div className="flex justify-between items-center">
-                    <span className="inline-flex uppercase text-xs my-4 text-zinc-300 hover:text-zinc-400 dark:text-zinc-400 dark:hover:text-zinc-300">
+                    <span className="inline-flex uppercase text-xs my-4 text-zinc-500 hover:text-zinc-500/75 dark:text-zinc-400 dark:hover:text-zinc-300">
                         DIRECT MESSAGE
                     </span>
                     <ActionTooltip label="Create DM" side="top" align="center">
