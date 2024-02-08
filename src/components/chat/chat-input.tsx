@@ -11,6 +11,7 @@ import qs from "query-string";
 import { axiosInstance } from "@/lib/axios";
 import EmojiPicker from "@/components/emoji-picker";
 import { chatInputValidator } from "@/lib/validations";
+import { useMutation, useQueryClient } from "react-query";
 
 interface ChatInputProps {
     apiURL: string;
@@ -25,25 +26,44 @@ export default function ChatInput({
     name,
     type,
 }: ChatInputProps) {
+    const queryClient = useQueryClient();
     const form = useForm<z.infer<typeof chatInputValidator>>({
         resolver: zodResolver(chatInputValidator),
         defaultValues: {
             content: "",
         },
     });
+    const queryKey = `chat:${type}:${
+        query[type === "channel" ? "channelId" : "conversationId"]
+    }`;
 
-    const handleOnSubmit = async (data: z.infer<typeof chatInputValidator>) => {
-        try {
+    const mutation = useMutation({
+        mutationFn: (newMessage: any) => {
             const url = qs.stringifyUrl({
                 url: apiURL,
                 query,
             });
-            await axiosInstance.post(url, data);
+            return axiosInstance.post(url, newMessage);
+        },
+        onMutate: async (newMessage: any) => {
+            await queryClient.cancelQueries({ queryKey: [queryKey] });
+            // Snapshot the previous value
+            const prevMessages = queryClient.getQueryData([queryKey]);
+            // Optimistically update to the new value
+
+            // Return a context object with the snapshotted value
+            return { prevMessages };
+        },
+    });
+
+    const handleOnSubmit = async (data: z.infer<typeof chatInputValidator>) => {
+        try {
+            mutation.mutate(data);
             form.reset({
                 content: "",
             });
         } catch (error: any) {
-            console.log(error);
+            throw new Error(error);
         }
     };
 
@@ -68,9 +88,12 @@ export default function ChatInput({
                                     </button>
                                     <Input
                                         className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-300"
-                                        placeholder={type === 'channel' ?`Message #${name}` : `Message @${name}`}
+                                        placeholder={
+                                            type === "channel"
+                                                ? `Message #${name}`
+                                                : `Message @${name}`
+                                        }
                                         {...field}
-                                        
                                     />
                                     <button
                                         type="button"
@@ -78,7 +101,9 @@ export default function ChatInput({
                                     >
                                         <EmojiPicker
                                             onChange={(emoji: string) => {
-                                                field.onChange(`${field.value}${emoji}`);
+                                                field.onChange(
+                                                    `${field.value}${emoji}`
+                                                );
                                             }}
                                         />
                                     </button>

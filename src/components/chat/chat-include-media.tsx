@@ -5,8 +5,8 @@ import Image from "next/image";
 import React from "react";
 
 interface ChatIncludeMediaProps {
-    dm?: DirectMessageWithRelation;
-    channelMsg?: MessageWithRelation;
+    dm: DirectMessageWithRelation | null;
+    channelMsg: MessageWithRelation | null;
 }
 
 export default function ChatIncludeMedia({

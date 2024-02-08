@@ -3,20 +3,22 @@
 import React from "react";
 import { UserAvatar } from "../user-avatar";
 import OnlineStatus from "../online-status";
-import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { ConversationWithRelation } from "@/types";
+import { useUser } from "@clerk/nextjs";
 
 interface DMItemProps {
-    partner: User;
+    conversation: ConversationWithRelation;
 }
 
-export default function DMItem({ partner }: DMItemProps) {
+export default function DMItem({ conversation }: DMItemProps) {
     const router = useRouter();
-
+    const user = useUser().user;
+    const partner = conversation.users.find((u) => u.id !== user?.id);
+    if(!partner) return null;
+        
     const handleOnClick = () => {
-        router.push(
-            `/home/dm/${partner.id}`
-        );
+        router.push(`/home/dm/${conversation.id}`);
     };
 
     return (
@@ -32,9 +34,7 @@ export default function DMItem({ partner }: DMItemProps) {
                 <OnlineStatus className="ring-4 ring-secondary absolute bottom-0 right-0" />
             </div>
 
-            <span className="text-sm">
-                {partner.name}
-            </span>
+            <span className="text-sm">{partner.name}</span>
         </button>
     );
 }

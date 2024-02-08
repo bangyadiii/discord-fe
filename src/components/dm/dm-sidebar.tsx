@@ -5,15 +5,16 @@ import { Plus } from "lucide-react";
 import UserInformation from "@/components/user-information";
 import DMItem from "./dm-item";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { User } from "@prisma/client";
+import { ConversationWithRelation } from "@/types";
 
 interface DMSideBarProps {
-    partners: User[];
+    conversations: ConversationWithRelation[];
 }
 
 export default function DMSideBar({
-    partners
+    conversations
 }: DMSideBarProps) {
+ 
     return (
         <div className="flex flex-col h-full w-full bg-secondary">
             <DMSideBarHeader />
@@ -28,7 +29,7 @@ export default function DMSideBar({
                         </button>
                     </ActionTooltip>
                 </div>
-                {!partners || partners?.length! === 0 ? (
+                {!conversations || conversations?.length! === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full">
                         <span className="text-primary-foreground text-sm font-semibold">
                             No conversations
@@ -38,11 +39,11 @@ export default function DMSideBar({
                         </span>
                     </div>
                 ) : (
-                    partners.map((partner) => {
+                    conversations.map((conversation) => {
                         return (
                             <DMItem
-                                key={`dm-${partner.id}`}
-                                partner={partner}
+                                key={`conversation-${conversation.id}`}
+                                conversation={conversation}
                             />
                         );
                     })

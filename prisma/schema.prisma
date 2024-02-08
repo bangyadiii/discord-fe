@@ -22,7 +22,7 @@ model User {
   servers          Server[]
   members          Member[]
   sentMessages     DirectMessage[] @relation("sender")
-  receivedMessages DirectMessage[] @relation("receiver")
+  conversations    Conversation[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -125,12 +125,22 @@ model Message {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-  readAt    DateTime? @map("read_at")
   deletedAt DateTime? @map("deleted_at")
 
   @@index([channelId])
   @@index([memberId])
   @@map("messages")
+}
+
+model Conversation {
+  id String @id @default(uuid()) @map("id")
+  createdAt DateTime @default(now()) @map("created_at")
+  lastMessageAt DateTime @default(now()) @map("last_message_at")
+  
+  users User[]
+  directMessages DirectMessage[]
+
+  @@map("conversations")
 }
 
 model DirectMessage {
@@ -140,16 +150,16 @@ model DirectMessage {
 
   senderId   String @map("sender_id")
   sender     User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
-  receiverId String @map("receiver_id")
-  receiver   User   @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   readAt    DateTime? @map("read_at")
   deletedAt DateTime? @map("deleted_at")
+  conversationId String @map("conversation_id")
+  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  @@index([receiverId])
-  @@index([senderId, receiverId])
+  @@index([senderId])
+  @@index([conversationId])
 
   @@map("direct_messages")
 }

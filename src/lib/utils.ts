@@ -21,3 +21,15 @@ export function formatTimeForHuman(timestamp: string | number | Date) {
 
     return format(time, DateTimeFormat);
 }
+
+export function toPusherKey(key: string) {
+    return key.replace(/:/g, "__").toLowerCase();
+}
+
+export function extractType(key: string) {
+    const extract = key.split(":");
+    if (extract[0] !== "chat") {
+        throw new Error("Invalid query key");
+    }
+    return extract[1];
+}

@@ -4,8 +4,10 @@ import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import React from "react";
-import { ServerWithRelation } from "@/types";
 import ChannelSection from "@/components/channel/channel-section";
+import { useCurrentConversation } from "@/hooks/use-current-conversation";
+import { ChannelWithRelation } from "@/types";
+import { MESSAGES_BATCH } from "@/config/app";
 
 interface ChannelPageProps {
     params?: {
@@ -14,7 +16,7 @@ interface ChannelPageProps {
     };
 }
 
-async function getCurrentChannel(serverId: string, channelId: string) {
+async function getCurrentChannel(serverId: string, channelId: string) : Promise<ChannelWithRelation | null> {
     return await db.channel.findUnique({
         where: {
             id: channelId,
@@ -43,6 +45,9 @@ async function getCurrentChannel(serverId: string, channelId: string) {
                     },
                 },
             },
+            messages: {
+                take: MESSAGES_BATCH,
+            }
         },
     });
 }
@@ -65,7 +70,7 @@ async function ChannelPage({ params }: ChannelPageProps) {
     });
 
     if (!channel || !member) return redirect("/");
-    const server: ServerWithRelation = channel.server as ServerWithRelation;
+    useCurrentConversation.setState({ currentChannel: channel });
 
     return (
         <div className="flex flex-col h-full">
@@ -73,13 +78,10 @@ async function ChannelPage({ params }: ChannelPageProps) {
                 <ChatHeader
                     label={channel.name}
                     type="channel"
-                    data={{
-                        server,
-                    }}
                 />
             </div>
             <div className="h-[calc(100%-50px)]">
-                <ChannelSection channel={channel} />
+                <ChannelSection />
             </div>
         </div>
     );

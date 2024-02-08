@@ -7,7 +7,7 @@ import ReactQueryProvider from "@/components/providers/react-query-provider";
 import ModalProvider from "@/components/providers/modal-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
-import { SocketProvider } from "@/components/providers/socket-provider";
+import PusherProvider from "@/components/providers/pusher-provider";
 
 const font = Open_Sans({
     subsets: ["latin"],
@@ -35,11 +35,9 @@ export default function RootLayout({
                             enableSystem={false}
                             storageKey="discord-clone-theme"
                         >
-                            <SocketProvider>
-                                <ModalProvider />
-                                {children}
-                                <Toaster />
-                            </SocketProvider>
+                            <ModalProvider />
+                            <PusherProvider>{children}</PusherProvider>
+                            <Toaster />
                         </ThemeProvider>
                     </ReactQueryProvider>
                 </body>

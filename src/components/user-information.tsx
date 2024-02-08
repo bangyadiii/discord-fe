@@ -5,11 +5,10 @@ import { UserAvatar } from "@/components/user-avatar";
 import OnlineStatus from "@/components/online-status";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSocket } from "./providers/socket-provider";
 
 export default function UserInformation() {
     const { user, isLoaded } = useUser();
-    const { isConnected } = useSocket();
+    const isConnected = true;
 
     if (!isLoaded) {
         return (

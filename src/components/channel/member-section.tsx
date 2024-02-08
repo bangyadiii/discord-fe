@@ -70,8 +70,7 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                             type="directMessage"
                                             apiURL="/dm"
                                             query={{
-                                                receiverUserId:
-                                                    member?.user?.id,
+                                                conversationId: member.user?.id
                                             }}
                                         />
                                     </div>

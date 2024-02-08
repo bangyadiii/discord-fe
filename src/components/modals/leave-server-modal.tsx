@@ -43,7 +43,6 @@ export default function LeaveServerModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-            console.log(error);
         } finally {
             setIsLoading(false);
         }

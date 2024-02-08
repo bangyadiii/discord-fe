@@ -7,7 +7,7 @@ interface CurrentServerStore {
     setCurrentServer: (server: ServerWithRelation) => void;
 }
 
-const useCurrentServer = create<CurrentServerStore>((set) => ({
+export const useCurrentServer = create<CurrentServerStore>((set) => ({
     server: undefined,
     setCurrentServer: (server) => set({ server }),
 }));

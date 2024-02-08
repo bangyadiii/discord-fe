@@ -1,5 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 // delete message by id
@@ -47,11 +49,21 @@ export async function DELETE(
                 { status: 401 }
             );
         }
-        await db.message.delete({
+        const newMessage = await db.message.update({
             where: {
                 id: messageId,
             },
+            data: {
+                deletedAt: new Date(),
+            },
         });
+        await pusherServer.trigger(
+            toPusherKey(`chat:channel:${newMessage.channelId}`),
+            toPusherKey("channel:deleted"),
+            {
+                data: newMessage,
+            }
+        );
         return NextResponse.json(
             {
                 message: "Message has been deleted",
@@ -131,7 +143,7 @@ export async function PATCH(
             );
         }
 
-        await db.message.update({
+        const updated = await db.message.update({
             where: {
                 id: messageId as string,
             },
@@ -139,6 +151,13 @@ export async function PATCH(
                 content,
             },
         });
+        await pusherServer.trigger(
+            toPusherKey(`chat:channel:${updated.channelId}`),
+            toPusherKey("channel:updated"),
+            {
+                data: updated,
+            }
+        );
 
         return NextResponse.json(
             {

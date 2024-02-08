@@ -1,60 +1,52 @@
 import DMSideBar from "@/components/dm/dm-sidebar";
+import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { ConversationWithRelation } from "@/types";
 import { redirectToSignIn } from "@clerk/nextjs";
+import { User } from "@prisma/client";
 import React from "react";
 
 export default async function DMLayout({
     children,
-    params,
 }: {
     children: React.ReactNode;
-    params: {
-        userId: string;
-    };
 }) {
     const user = await currentProfile();
     if (!user) return redirectToSignIn();
 
-    const conversations = await db.$queryRawUnsafe<{
-        conversation_partner_id: string;
-        last_message_time: string;
-    }[]>(`
-        SELECT
-            CASE
-                WHEN sender_id = '${user.id}' THEN receiver_id
-                ELSE sender_id
-            END AS conversation_partner_id,
-            MAX(created_at) AS last_message_time
-        FROM
-            direct_messages
-        WHERE
-            sender_id = '${user.id}' OR receiver_id = '${user.id}'
-        GROUP BY
-            conversation_partner_id
-        ORDER BY
-            last_message_time DESC;
-    `);
-    const conversationPartnerIds = conversations.map(
-        (conversation) => conversation.conversation_partner_id
-    );
-    const conversationPartners = await db.user.findMany({
-        where: {
-            id: {
-                in: conversationPartnerIds,
-            },
-        },
-    });
+    const conversations = await getConversations(user);
 
     return (
         <div className="h-screen flex overflow-hidden">
             <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
-                <DMSideBar
-                    partners={conversationPartners}
-                />
+                <DMSideBar conversations={conversations} />
             </div>
 
             <div className="h-full flex-1 md:pl-60">{children}</div>
         </div>
     );
+}
+
+async function getConversations(
+    user: User
+): Promise<ConversationWithRelation[]> {
+    return await db.conversation.findMany({
+        where: {
+            users: {
+                some: {
+                    id: user.id,
+                },
+            },
+        },
+        include: {
+            users: true,
+            directMessages: {
+                take: MESSAGES_BATCH,
+                include: {
+                    sender: true,
+                },
+            },
+        },
+    });
 }

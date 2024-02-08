@@ -1,15 +1,13 @@
 import {
     Channel,
     ChannelCategory,
+    Conversation,
     DirectMessage,
     Member,
     Message,
     Server,
     User,
 } from "@prisma/client";
-import { Socket, Server as NetServer } from "net";
-import { Server as SocketIOServer } from "socket.io";
-import { NextApiResponse } from "next";
 
 export type ServerWithRelation = Server & {
     members: (Member & { user?: User })[] | null;
@@ -31,10 +29,14 @@ export type MessageWithRelation = Message & {
     channel?: Channel;
 };
 
-export type NextApiResponseServerIO = NextApiResponse & {
-    socket: Socket & {
-        server: NetServer & {
-            io?: SocketIOServer;
-        };
-    };
+export type ConversationWithRelation = Conversation & {
+    users: User[];
+    directMessages: DirectMessageWithRelation[];
 };
+
+export type ChannelWithRelation = Channel & {
+    server?: ServerWithRelation;
+    messages?: MessageWithRelation[];
+}
+
+export type ChatType = "channel" | "directMessage";

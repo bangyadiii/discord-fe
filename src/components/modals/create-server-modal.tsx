@@ -52,7 +52,6 @@ export default function CreateServerModal() {
             router.refresh();
             onClose();
         } catch (error: any) {
-            console.log(error);
             toast({
                 title: "Oops! Something went wrong.",
                 description: error.message,

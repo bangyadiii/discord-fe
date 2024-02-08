@@ -26,12 +26,11 @@ export default function DeleteMessageModal() {
     };
 
     const handleDeleteMessage = async () => {
-        if(!data?.msgUrl) {
-            console.log(`msgUrl is not provided in data: ${data}`);
-            return;
-        };
-
         try {
+            if (!data?.msgUrl) {
+                throw new Error("Invalid message URL");
+            }
+
             setIsLoading(true);
             await axiosInstance.delete<{ message: string }>(data.msgUrl);
         } catch (error: any) {
@@ -41,7 +40,6 @@ export default function DeleteMessageModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-            console.error(error);
         } finally {
             setIsLoading(false);
         }

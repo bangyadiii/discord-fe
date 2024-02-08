@@ -1,19 +1,23 @@
 "use client";
 
-import React, { useRef } from "react";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useRef } from "react";
+import { cn, toPusherKey } from "@/lib/utils";
 import ChatWelcome from "@/components/chat/chat-welcome";
 import useChatQuery from "@/hooks/use-chat-query";
-import { ArrowDown, ServerCrash } from "lucide-react";
+import { ServerCrash } from "lucide-react";
 import ChatItem from "./chat-item";
 import ChatMessagesSkeleton from "./chat-messages-skeleton";
 import { Channel, User } from "@prisma/client";
+import { ChatType } from "@/types";
+import { useQueryClient } from "react-query";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import useChatSocket from "@/hooks/use-chat-socket";
 
 interface ChatMessagesProps {
     apiUrl: string;
-    paramKey: "channelId" | "receiverUserId";
+    paramKey: "channelId" | "conversationId";
     paramValue: string;
-    type: "channel" | "directMessage";
+    type: ChatType;
     partner?: User;
     channel?: Channel;
     className?: string;
@@ -28,7 +32,9 @@ export default function ChatMessages({
     type,
     className,
 }: ChatMessagesProps) {
-    const queryKey = `chat:${type}:${type === "channel" ? channel?.id : partner?.id}`;
+    const queryKey = `chat:${type}:${paramValue}`;
+    const queryClient = useQueryClient();
+
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
         useChatQuery({
             queryKey,
@@ -37,7 +43,18 @@ export default function ChatMessages({
             paramValue,
         });
 
-    const scrollDownRef = useRef<HTMLDivElement | null>(null);
+    const chatRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    useChatSocket({ queryClient, queryKey });
+
+    useChatScroll({
+        chatRef,
+        bottomRef,
+        loadMore: fetchNextPage,
+        shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+        count: data?.pages?.[0]?.data?.length ?? 0,
+    });
 
     if (status == "loading" && !data)
         return (
@@ -54,12 +71,13 @@ export default function ChatMessages({
         );
     return (
         <div
+            ref={chatRef}
             className={cn(
                 "relative flex-1 flex flex-col-reverse overflow-y-auto px-5",
                 className
             )}
         >
-            <div ref={scrollDownRef} />
+            <div ref={bottomRef} />
             {data?.pages.map((page, i) => (
                 <React.Fragment key={i}>
                     {page.data?.map((message) => (
@@ -67,11 +85,14 @@ export default function ChatMessages({
                     ))}
                 </React.Fragment>
             ))}
-            {isFetchingNextPage && (
-                 <ChatMessagesSkeleton />
-            )}
+            {hasNextPage && isFetchingNextPage && <ChatMessagesSkeleton />}
 
-            <ChatWelcome type={type} name={type !== 'channel' ? partner?.name! : channel?.name!} />
+            {!hasNextPage && (
+                <ChatWelcome
+                    type={type}
+                    name={type !== "channel" ? partner?.name! : channel?.name!}
+                />
+            )}
         </div>
     );
 }

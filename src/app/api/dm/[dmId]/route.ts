@@ -1,5 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 // delete directMessage by Id
@@ -11,7 +13,7 @@ export async function DELETE(
         const user = await currentProfile();
         if (!user)
             return NextResponse.json(
-                { message: "Unauthorized" },
+                { message: "Unauthenticated" },
                 { status: 401 }
             );
 
@@ -29,11 +31,23 @@ export async function DELETE(
                 { status: 403 }
             );
         }
-        await db.directMessage.delete({
+        const newMessage = await db.directMessage.update({
             where: {
                 id: message.id,
             },
+            data: {
+                deletedAt: new Date(),
+            },
         });
+
+        await pusherServer.trigger(
+            toPusherKey(`chat:directMessage:${message.conversationId}`),
+            toPusherKey("directMessage:deleted"),
+            {
+                data: newMessage,
+            }
+        );
+
         return NextResponse.json({
             message: "Delete DM successfully.",
         });
@@ -86,8 +100,15 @@ export async function PATCH(
                 id: dm.id,
             },
         });
+        await pusherServer.trigger(
+            toPusherKey(`chat:directMessage:${updatedDM.conversationId}`),
+            toPusherKey("directMessage:updated"),
+            {
+                data: updatedDM,
+            }
+        );
         return NextResponse.json({
-            message: 'updated',
+            message: "updated",
             data: updatedDM,
         });
     } catch (error: any) {

@@ -1,6 +1,8 @@
 import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { Message } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -150,7 +152,22 @@ export async function POST(req: NextRequest) {
                 channelId: channelId,
                 memberId: member.id,
             },
+            include:{
+                member: {
+                    include: {
+                        user: true
+                    }
+                },
+                channel: true,
+            }
         });
+        await pusherServer.trigger(
+            toPusherKey(`chat:channel:${channelId}`),
+            toPusherKey("channel:new"),
+            {
+                data: message,
+            }
+        );
 
         return NextResponse.json({ data: message }, { status: 201 });
     } catch (error: any) {

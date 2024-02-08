@@ -1,56 +1,58 @@
 import React from "react";
 import ChatInput from "./chat-input";
-import { Channel, User } from "@prisma/client";
 import ChatMessages from "./chat-messages";
+import { useCurrentConversation } from "@/hooks/use-current-conversation";
+import { auth } from "@clerk/nextjs";
+import { User } from "@prisma/client";
+import { ChatType } from "@/types";
 
 interface ChatSectionProps {
-    currentChat: string;
-    chatType: "channel" | "directMessage";
-    data?: {
-        channel?: Channel;
-        receiverUser?: User;
-    };
+    chatType: ChatType;
     messageApiUrl?: string;
     pushMessageUrl?: string;
 }
 
 export default function ChatSection({
-    currentChat,
     chatType,
-    data,
     messageApiUrl = "/messages",
     pushMessageUrl = "/messages",
 }: ChatSectionProps) {
-    let paramKey: "channelId" | "receiverUserId" = "channelId";
-    if (chatType == "channel" && !data?.channel) return null;
-    if (chatType == "directMessage" && !data?.receiverUser) return null;
-    if (chatType == "directMessage") {
-        paramKey = "receiverUserId";
-    }
+    let paramKey: "channelId" | "conversationId" =
+        chatType === "channel" ? "channelId" : "conversationId";
+    const user = auth();
+    const data = useCurrentConversation.getState();
+    const partner = data?.conversation?.users.find(
+        (u) => u.id !== user?.userId
+    ) as User;
+
     return (
         <div className="h-full w-full flex flex-col justify-between">
             <ChatMessages
-                partner={data?.receiverUser}
-                channel={data?.channel}
+                partner={partner}
+                channel={data?.currentChannel}
                 type={chatType}
                 apiUrl={messageApiUrl}
                 paramKey={paramKey}
                 paramValue={
-                    paramKey == "channelId"
-                        ?  data?.channel?.id!
-                        : data?.receiverUser?.id!
+                    chatType == "channel"
+                        ? data?.currentChannel?.id!
+                        : data?.conversation?.id!
                 }
             />
 
             <div className="h-[80px] w-full flex justify-center items-start">
                 <ChatInput
-                    name={data?.receiverUser?.name!}
+                    name={
+                        chatType === "channel"
+                            ? data?.currentChannel?.name!
+                            : partner?.name!
+                    }
                     type={chatType}
                     apiURL={pushMessageUrl}
                     query={
                         chatType === "channel"
-                            ? { channelId: data?.channel?.id }
-                            : { receiverUserId: data?.receiverUser?.id }
+                            ? { channelId: data?.currentChannel?.id }
+                            : { conversationId: data?.conversation?.id }
                     }
                 />
             </div>

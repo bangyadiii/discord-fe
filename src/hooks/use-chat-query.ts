@@ -1,10 +1,9 @@
-import { useSocket } from "@/components/providers/socket-provider";
 import { axiosInstance } from "@/lib/axios";
 import { DirectMessageWithRelation, MessageWithRelation } from "@/types";
 import queryString from "query-string";
 import { useInfiniteQuery } from "react-query";
 
-type ParamKey = "channelId" | "receiverUserId";
+type ParamKey = "channelId" | "conversationId";
 
 interface ChatContext {
     queryKey: string;
@@ -19,8 +18,6 @@ export default function useChatQuery({
     paramKey,
     paramValue
 }: ChatContext) {
-    const { isConnected } = useSocket();
-
     const fetchMessages = async ({ pageParam }: { pageParam?: string }) => {
         const url = queryString.stringifyUrl(
             {

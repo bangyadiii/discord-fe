@@ -10,11 +10,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
-import { DirectMessageWithRelation, MessageWithRelation } from "@/types";
+import type { DirectMessageWithRelation, MessageWithRelation } from "@/types";
 import { formatTimeForHuman } from "@/lib/utils";
 import { axiosInstance } from "@/lib/axios";
 import { chatInputValidator } from "@/lib/validations";
 import ChatIncludeMedia from "./chat-include-media";
+import { useUser } from "@clerk/nextjs";
 
 interface ChatItemProps {
     data: MessageWithRelation | DirectMessageWithRelation;
@@ -22,8 +23,18 @@ interface ChatItemProps {
 
 export default function ChatItem({ data }: ChatItemProps) {
     const { onOpen } = useModal();
-    const dm = data as DirectMessageWithRelation;
-    const channelMsg = data as MessageWithRelation;
+    let dm: DirectMessageWithRelation | null = null;
+    let channelMsg: MessageWithRelation | null = null;
+    const user = useUser();
+
+    if ((data as DirectMessageWithRelation).conversationId) {
+        dm = data as DirectMessageWithRelation;
+    } else {
+        channelMsg = data as MessageWithRelation;
+    }
+
+    const isMe =
+        user?.user?.id === (dm?.senderId ?? channelMsg?.member?.userId);
     const [isEditing, setIsEditing] = React.useState(false);
     const deletedAt = (dm && dm?.deletedAt) ?? channelMsg?.deletedAt;
     const isUpdated =
@@ -55,7 +66,7 @@ export default function ChatItem({ data }: ChatItemProps) {
             if (e.key === "Escape" || e.keyCode === 27) {
                 setIsEditing(false);
             }
-            if (e.key == "Enter" || e.keyCode === 13) {
+            if (isEditing && (e.key == "Enter" || e.keyCode === 13)) {
                 form.handleSubmit(onEditFormSubmit)();
             }
         };
@@ -63,7 +74,7 @@ export default function ChatItem({ data }: ChatItemProps) {
         window.addEventListener("keydown", keydownHandler);
 
         return () => window.removeEventListener("keydown", keydownHandler);
-    }, [form, onEditFormSubmit]);
+    }, [form, onEditFormSubmit, isEditing]);
 
     return (
         <div className="relative group flex items-center hover:bg-black/5 p-0 md:p-4 transition w-full">
@@ -71,7 +82,7 @@ export default function ChatItem({ data }: ChatItemProps) {
                 <div className="cursor-pointer hover:drop-shadow-md transition">
                     <UserAvatar
                         src={
-                            dm.sender?.profileUrl ??
+                            dm?.sender?.profileUrl ??
                             channelMsg?.member?.user?.profileUrl!
                         }
                     />
@@ -80,13 +91,18 @@ export default function ChatItem({ data }: ChatItemProps) {
                     <div className="flex items-center gap-x-2">
                         <div className="flex items-center">
                             <p className="font-semibold text-sm hover:underline cursor-pointer">
-                                {dm.sender?.name ??
+                                {dm?.sender?.name ??
                                     channelMsg?.member?.user?.name!}
                             </p>
+                            {isMe && (
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-2">
+                                    (You)
+                                </span>
+                            )}
                         </div>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
                             {formatTimeForHuman(
-                                dm.createdAt ?? channelMsg.createdAt
+                                dm?.createdAt ?? channelMsg?.createdAt!
                             )}
                         </span>
                     </div>
