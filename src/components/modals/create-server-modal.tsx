@@ -26,7 +26,7 @@ import React from "react";
 import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { useToast } from "@/components/ui/use-toast";
 import { inputServerValidator } from "@/lib/validations";
 

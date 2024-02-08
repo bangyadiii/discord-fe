@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { ChannelType } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";

@@ -1,9 +1,7 @@
-import React from "react";
 import ChatSection from "@/components/chat/chat-section";
 import MemberSection from "./member-section";
 import VideoSection from "@/components/video/video-section";
-import { useCurrentConversation } from "@/hooks/use-current-conversation";
-
+import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 
 export default function ChannelSection() {
     const data = useCurrentConversation.getState();
@@ -22,7 +20,7 @@ export default function ChannelSection() {
                 )}
             </div>
             {data?.currentChannel?.type === "TEXT" && (
-                <div className="md:w-[320px] hidden md:block h-full">
+                <div className="w-[320px] hidden lg:block h-full">
                     <MemberSection server={data?.currentChannel.server} />
                 </div>
             )}

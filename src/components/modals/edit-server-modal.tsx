@@ -24,7 +24,7 @@ import React, { useEffect } from "react";
 import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { inputServerValidator } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 

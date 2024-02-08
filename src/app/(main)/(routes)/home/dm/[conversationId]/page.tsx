@@ -2,7 +2,7 @@ import ChatHeader from "@/components/chat/chat-header";
 import ChatSection from "@/components/chat/chat-section";
 import PartnerDetail from "@/components/dm/partner-detail";
 import { MESSAGES_BATCH } from "@/config/app";
-import { useCurrentConversation } from "@/hooks/use-current-conversation";
+import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
@@ -33,7 +33,11 @@ export default async function ConversationPage({
     return (
         <div className="flex flex-col h-full">
             <div className="h-[50px]">
-                <ChatHeader label={partner.name} type="directMessage" imageUrl={partner.profileUrl}/>
+                <ChatHeader
+                    label={partner.name}
+                    type="directMessage"
+                    imageUrl={partner.profileUrl}
+                />
             </div>
             <div className="h-[calc(100%-50px)]">
                 <div className="flex h-full">
@@ -44,7 +48,7 @@ export default async function ConversationPage({
                             pushMessageUrl="/dm"
                         />
                     </div>
-                    <div className="md:w-[320px] hidden md:block h-full bg-secondary text-secondary-foreground">
+                    <div className="w-[320px] hidden lg:block h-full bg-secondary text-secondary-foreground">
                         <PartnerDetail />
                     </div>
                 </div>

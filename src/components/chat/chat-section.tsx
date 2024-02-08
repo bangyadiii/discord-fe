@@ -1,7 +1,6 @@
-import React from "react";
 import ChatInput from "./chat-input";
 import ChatMessages from "./chat-messages";
-import { useCurrentConversation } from "@/hooks/use-current-conversation";
+import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 import { auth } from "@clerk/nextjs";
 import { User } from "@prisma/client";
 import { ChatType } from "@/types";

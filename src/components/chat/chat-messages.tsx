@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { cn, toPusherKey } from "@/lib/utils";
+import React, { useRef } from "react";
+import { cn } from "@/lib/utils";
 import ChatWelcome from "@/components/chat/chat-welcome";
-import useChatQuery from "@/hooks/use-chat-query";
+import useChatQuery from "@/hooks/query/use-chat-query";
 import { ServerCrash } from "lucide-react";
 import ChatItem from "./chat-item";
 import ChatMessagesSkeleton from "./chat-messages-skeleton";

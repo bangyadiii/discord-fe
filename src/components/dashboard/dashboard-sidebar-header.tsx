@@ -11,7 +11,8 @@ import {
     CommandList,
 } from "@/components/ui/command";
 
-export default function DMSideBarHeader() {
+
+export default function DashboardSidebarHeader() {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {

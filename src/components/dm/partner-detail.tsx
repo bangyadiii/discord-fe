@@ -1,20 +1,21 @@
-import React from "react";
 import { UserAvatar } from "@/components/user-avatar";
 import OnlineStatus from "@/components/online-status";
 import { Separator } from "@/components/ui/separator";
-import { useCurrentConversation } from "@/hooks/use-current-conversation";
+import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 import { formatTimeForHuman } from "@/lib/utils";
 import { auth } from "@clerk/nextjs";
 
 export default function PartnerDetail() {
-    const {userId} = auth();
+    const { userId } = auth();
     if (!userId) {
         throw new Error("User not found");
-    };
+    }
     const conversation = useCurrentConversation.getState().conversation;
-    if(!conversation) throw new Error('Conversation data needed');
+    if (!conversation) throw new Error("Conversation data needed");
 
-    const currentPartner = conversation?.users.find((partners) => partners.id !== userId);
+    const currentPartner = conversation?.users.find(
+        (partners) => partners.id !== userId
+    );
 
     return (
         <div className="flex flex-col gap-y-1 ">

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { axiosInstance } from "@/lib/axios";
 import { useToast } from "@/components/ui/use-toast";
 import {

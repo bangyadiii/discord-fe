@@ -1,4 +1,4 @@
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { DirectMessageWithRelation, MessageWithRelation } from "@/types";
 import { FileIcon } from "lucide-react";
 import Image from "next/image";

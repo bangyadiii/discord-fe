@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { Loader } from "lucide-react";
 import { createChannelCategoryValidator } from "@/lib/validations";
 
@@ -45,7 +45,9 @@ export default function CreateChannelCategoryModal() {
 
     const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = async (values: z.infer<typeof createChannelCategoryValidator>) => {
+    const onSubmit = async (
+        values: z.infer<typeof createChannelCategoryValidator>
+    ) => {
         try {
             await axiosInstance.post("/channel-categories", values);
             form.reset();
@@ -53,7 +55,7 @@ export default function CreateChannelCategoryModal() {
             onClose();
         } catch (error) {
             console.error(error);
-        } 
+        }
     };
     const handleClose = () => {
         form.reset();

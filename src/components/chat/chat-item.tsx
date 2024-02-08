@@ -9,7 +9,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import type { DirectMessageWithRelation, MessageWithRelation } from "@/types";
 import { formatTimeForHuman } from "@/lib/utils";
 import { axiosInstance } from "@/lib/axios";

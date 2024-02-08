@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 
 function ImageChatModal() {
     const { isOpen, onClose, type, data } = useModal();
@@ -31,7 +31,9 @@ function ImageChatModal() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute -bottom-7 left-0"
-                    >Open in new tab</a>
+                    >
+                        Open in new tab
+                    </a>
                 </div>
             </DialogContent>
         </Dialog>

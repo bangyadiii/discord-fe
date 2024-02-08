@@ -1,5 +1,6 @@
 import DMSideBar from "@/components/dm/dm-sidebar";
 import { MESSAGES_BATCH } from "@/config/app";
+import { useConversations } from "@/hooks/store/use-conversations-store";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { ConversationWithRelation } from "@/types";
@@ -16,6 +17,9 @@ export default async function DMLayout({
     if (!user) return redirectToSignIn();
 
     const conversations = await getConversations(user);
+    useConversations.setState({
+        conversations,
+    });
 
     return (
         <div className="h-screen flex overflow-hidden">

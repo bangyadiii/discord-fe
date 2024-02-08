@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/collapsible";
 import ChannelItem from "@/components/channel/channel-item";
 import { cn } from "@/lib/utils";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 
 interface ServerSectionProps {
     label?: string;

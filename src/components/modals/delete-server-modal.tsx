@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 
 import React from "react";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/axios";
 import { useRouter } from "next/navigation";
