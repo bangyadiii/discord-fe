@@ -16,13 +16,13 @@ model User {
   name           String
   email          String @unique
   provider       String
-  providerUserId String @map("provider_user_id") @unique
+  providerUserId String @unique @map("provider_user_id")
 
-  profileUrl       String          @map("profile_url") @db.Text
-  servers          Server[]
-  members          Member[]
-  sentMessages     DirectMessage[] @relation("sender")
-  conversations    Conversation[]
+  profileUrl    String          @map("profile_url") @db.Text
+  servers       Server[]
+  members       Member[]
+  sentMessages  DirectMessage[] @relation("sender")
+  conversations Conversation[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -133,11 +133,12 @@ model Message {
 }
 
 model Conversation {
-  id String @id @default(uuid()) @map("id")
-  createdAt DateTime @default(now()) @map("created_at")
+  id            String   @id @default(uuid()) @map("id")
+  createdAt     DateTime @default(now()) @map("created_at")
   lastMessageAt DateTime @default(now()) @map("last_message_at")
-  
-  users User[]
+  isGroup       Boolean  @default(false) @map("is_group")
+
+  users          User[]
   directMessages DirectMessage[]
 
   @@map("conversations")
@@ -148,18 +149,17 @@ model DirectMessage {
   content String  @map("content") @db.Text
   fileUrl String? @map("file_url") @db.Text
 
-  senderId   String @map("sender_id")
-  sender     User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+  senderId String @map("sender_id")
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  readAt    DateTime? @map("read_at")
-  deletedAt DateTime? @map("deleted_at")
-  conversationId String @map("conversation_id")
-  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  readAt         DateTime?    @map("read_at")
+  deletedAt      DateTime?    @map("deleted_at")
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([senderId])
   @@index([conversationId])
-
   @@map("direct_messages")
 }

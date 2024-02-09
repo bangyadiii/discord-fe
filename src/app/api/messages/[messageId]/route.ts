@@ -1,7 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 // delete message by id
@@ -58,8 +58,8 @@ export async function DELETE(
             },
         });
         await pusherServer.trigger(
-            toPusherKey(`chat:channel:${newMessage.channelId}`),
-            toPusherKey("channel:deleted"),
+            toPrivateKey(toPusherKey(`chat:channel:${newMessage.channelId}`)),
+            toPusherKey("message:deleted"),
             {
                 data: newMessage,
             }
@@ -152,8 +152,8 @@ export async function PATCH(
             },
         });
         await pusherServer.trigger(
-            toPusherKey(`chat:channel:${updated.channelId}`),
-            toPusherKey("channel:updated"),
+            toPrivateKey(toPusherKey(`chat:channel:${updated.channelId}`)),
+            toPusherKey("message:updated"),
             {
                 data: updated,
             }

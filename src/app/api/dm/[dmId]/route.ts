@@ -1,7 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 // delete directMessage by Id
@@ -41,8 +41,10 @@ export async function DELETE(
         });
 
         await pusherServer.trigger(
-            toPusherKey(`chat:directMessage:${message.conversationId}`),
-            toPusherKey("directMessage:deleted"),
+            toPrivateKey(
+                toPusherKey(`chat:directMessage:${message.conversationId}`)
+            ),
+            toPusherKey("message:deleted"),
             {
                 data: newMessage,
             }
@@ -102,7 +104,7 @@ export async function PATCH(
         });
         await pusherServer.trigger(
             toPusherKey(`chat:directMessage:${updatedDM.conversationId}`),
-            toPusherKey("directMessage:updated"),
+            toPusherKey("message:updated"),
             {
                 data: updatedDM,
             }

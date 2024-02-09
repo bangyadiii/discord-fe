@@ -17,6 +17,7 @@ async function getCurrentServer(serverId: string, userId: string): Promise<Parti
             members: {
                 some: {
                     userId: userId,
+                    leftAt: null,
                 },
             },
         },

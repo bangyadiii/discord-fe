@@ -39,7 +39,7 @@ export default function ChatSection({
                 }
             />
 
-            <div className="h-[80px] w-full flex justify-center items-start">
+            <div className="h-[80px] w-full flex justify-center items-start px-8">
                 <ChatInput
                     name={
                         chatType === "channel"

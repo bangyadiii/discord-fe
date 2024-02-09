@@ -2,7 +2,7 @@ import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { Message } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const user = await currentProfile();
-        const { content, fileUrl } = await req.json();
+        const { content, fileUrl, id } = await req.json();
         const qs = new URL(req.url).searchParams;
         const channelId = qs.get("channelId");
 
@@ -108,9 +108,9 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (!content) {
+        if (!content || !id) {
             return NextResponse.json(
-                { error: "Content missing" },
+                { error: "Content and ID are required" },
                 { status: 400 }
             );
         }
@@ -147,23 +147,24 @@ export async function POST(req: NextRequest) {
 
         const message = await db.message.create({
             data: {
+                id,
                 content,
                 fileUrl,
                 channelId: channelId,
                 memberId: member.id,
             },
-            include:{
+            include: {
                 member: {
                     include: {
-                        user: true
-                    }
+                        user: true,
+                    },
                 },
                 channel: true,
-            }
+            },
         });
         await pusherServer.trigger(
-            toPusherKey(`chat:channel:${channelId}`),
-            toPusherKey("channel:new"),
+            toPrivateKey(toPusherKey(`chat:channel:${channelId}`)),
+            toPusherKey("message:new"),
             {
                 data: message,
             }

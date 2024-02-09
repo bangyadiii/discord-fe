@@ -1,6 +1,3 @@
-import { currentProfile } from "@/lib/current-profile";
-import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NavigationAction from "./navigation-action";
@@ -8,28 +5,21 @@ import NavigationItem from "./navigation-item";
 import { ModeToggle } from "@/components/ModeToggle";
 import { UserButton } from "@clerk/nextjs";
 import NavigationDM from "./navigation-dm";
+import { ServerWithRelation } from "@/types";
 
-export default async function NavigationSideBar() {
-    const user = await currentProfile();
+interface NavigationSideBarProps {
+    servers: ServerWithRelation[];
+}
 
-    if (!user) return redirect("/");
-
-    const servers = await db.server.findMany({
-        where: {
-            members: {
-                some: {
-                    userId: user.id,
-                },
-            },
-        },
-    });
-
+export default async function NavigationSideBar({
+    servers,
+}: NavigationSideBarProps) {
     return (
         <nav className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-zinc-200 dark:bg-[#1E1F22] py-3">
             <NavigationDM />
             <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
             <ScrollArea className="flex-1 w-full">
-                {servers.map((server) => (
+                {servers?.length > 0 && servers.map((server) => (
                     <div key={server.id} className="mb-4">
                         <NavigationItem
                             id={server.id}

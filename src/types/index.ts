@@ -16,13 +16,10 @@ export type MemberWithRelation = Member & {
 };
 
 export type ServerWithRelation = Server & {
-    members: MemberWithRelation[] | null;
-    channels:
-        | (Channel & { messages?: Channel[]; category?: ChannelCategory })[]
-        | null;
-    channelCategories:
-        | (ChannelCategory & { channels: Channel[] | null })[]
-        | null;
+    members?: MemberWithRelation[];
+    channels?:
+        | (Channel & { messages?: Channel[]; category?: ChannelCategory })[];
+    channelCategories?: (ChannelCategory & { channels?: Channel[] | null })[];
 };
 
 export type DirectMessageWithRelation = DirectMessage & {
@@ -46,3 +43,7 @@ export type ChannelWithRelation = Channel & {
 };
 
 export type ChatType = "channel" | "directMessage";
+
+export type ConversationId = string;
+
+export type ChannelId = string;

@@ -29,6 +29,9 @@ async function getCurrentChannel(
             server: {
                 include: {
                     members: {
+                        where:{
+                            leftAt: null,
+                        },
                         include: {
                             user: true,
                         },

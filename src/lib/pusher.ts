@@ -14,5 +14,9 @@ export const pusherClient = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_APP_
     userAuthentication: {
         endpoint: '/api/pusher/auth',
         transport: 'ajax',
+    },
+    channelAuthorization:{
+        endpoint: '/api/pusher/auth-channel',
+        transport: 'ajax',
     }
 });

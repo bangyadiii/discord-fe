@@ -2,7 +2,7 @@ import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { DirectMessage } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -87,12 +87,12 @@ export async function POST(req: NextRequest) {
                 { status: 401 }
             );
 
-        const { content } = await req.json();
+        const { content, id } = await req.json();
         const qs = new URL(req.url).searchParams;
 
-        if (!content)
+        if (!content || !id)
             return NextResponse.json(
-                { message: "Content is required" },
+                { message: "Content and Id are required." },
                 { status: 400 }
             );
 
@@ -105,7 +105,8 @@ export async function POST(req: NextRequest) {
 
         const dm = await db.directMessage.create({
             data: {
-                content: content,
+                id,
+                content,
                 senderId: user.id,
                 conversationId,
             },
@@ -115,8 +116,8 @@ export async function POST(req: NextRequest) {
         });
 
         await pusherServer.trigger(
-            toPusherKey(`chat:directMessage:${conversationId}`),
-            toPusherKey("directMessage:new"),
+            toPrivateKey(toPusherKey(`chat:directMessage:${conversationId}`)),
+            toPusherKey("message:new"),
             {
                 data: dm,
             }

@@ -12,7 +12,7 @@ export default function NavigationDM() {
     const handleOnClick = () => {
         router.push(`/home`);
     };
-    const isCurrentPath = pathname.includes("/home");
+    const isCurrentPath = pathname?.includes("/home");
     return (
         <ActionTooltip label="Direct Message" align="center" side="right">
             <button

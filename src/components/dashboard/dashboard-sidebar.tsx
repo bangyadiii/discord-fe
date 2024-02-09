@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
 import UserInformation from "@/components/user-information";
 import { ActionTooltip } from "@/components/action-tooltip";
-import DMItem from "@/components/dm/dm-item";
+import DMItem from "@/components/dashboard/dm/dm-item";
 import DashboardSidebarHeader from "./dashboard-sidebar-header";
 import { useConversations } from "@/hooks/store/use-conversations-store";
 
@@ -23,7 +23,7 @@ export default function DashboardSidebar() {
                         </button>
                     </ActionTooltip>
                 </div>
-                {!conversations || conversations?.length! === 0 ? (
+                {!conversations || conversations?.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full">
                         <span className="text-primary-foreground text-sm font-semibold">
                             No conversations

@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format, isToday, isYesterday } from "date-fns";
+import { ChannelId, ChatType, ConversationId } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -23,13 +24,43 @@ export function formatTimeForHuman(timestamp: string | number | Date) {
 }
 
 export function toPusherKey(key: string) {
-    return key.replace(/:/g, "__").toLowerCase();
+    return key.replace(/:/g, "__");
 }
 
-export function extractType(key: string) {
+export function extractChatType(key: string): ChatType {
     const extract = key.split(":");
-    if (extract[0] !== "chat") {
+    if (extract.length !== 3 || extract[0] !== "chat") {
         throw new Error("Invalid query key");
     }
-    return extract[1];
+    return extract[1] as ChatType;
+}
+
+export function getConversationIdOrChannelId(
+    key: string
+): ChannelId | ConversationId {
+    const type = extractChatType(key);
+    if (type === "channel") {
+        return key.split(":")[2] as ChannelId;
+    }
+
+    return key.split(":")[2] as ConversationId;
+}
+
+export function toPrivateKey(key: string) {
+    return "private-" + key;
+}
+
+const channelType = ["presence", "private"];
+
+export function removeChannelType(key: string): string {
+    for (let type of channelType) {
+        if (key.includes(type)) {
+            key = key.replace(type + "-", "");
+        }
+    }
+    return key;
+}
+
+export function revertKey(key: string) {
+    return key.replace(/__/g, ":");
 }

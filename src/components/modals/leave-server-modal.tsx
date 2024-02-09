@@ -45,6 +45,7 @@ export default function LeaveServerModal() {
             });
         } finally {
             setIsLoading(false);
+            onClose();
         }
     };
 

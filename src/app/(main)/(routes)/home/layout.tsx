@@ -1,4 +1,4 @@
-import DMSideBar from "@/components/dm/dm-sidebar";
+import DashboardSidebar from "@/components/dashboard/dashboard-sidebar";
 import { MESSAGES_BATCH } from "@/config/app";
 import { useConversations } from "@/hooks/store/use-conversations-store";
 import { currentProfile } from "@/lib/current-profile";
@@ -24,7 +24,7 @@ export default async function DMLayout({
     return (
         <div className="h-screen flex overflow-hidden">
             <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
-                <DMSideBar conversations={conversations} />
+                <DashboardSidebar />
             </div>
 
             <div className="h-full flex-1 md:pl-60">{children}</div>

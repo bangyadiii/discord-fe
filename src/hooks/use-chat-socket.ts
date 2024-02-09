@@ -1,9 +1,9 @@
 import { DirectMessageWithRelation, MessageWithRelation } from "@/types";
-import { find } from "lodash";
 import { useCallback, useEffect } from "react";
 import { QueryClient } from "react-query";
 import { pusherClient } from "@/lib/pusher";
-import { extractType, toPusherKey } from "@/lib/utils";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
+import { find } from "lodash";
 
 interface UseChatSocketParam {
     queryClient: QueryClient;
@@ -14,8 +14,6 @@ export default function useChatSocket({
     queryClient,
     queryKey,
 }: UseChatSocketParam) {
-    const type = extractType(queryKey);
-
     // Handler for new message
     const newMessageHandler = useCallback(
         (incoming: {
@@ -26,13 +24,25 @@ export default function useChatSocket({
                     return oldData;
                 }
 
+                // if the message is already in the list, update that message with the new one
+                // else add the new message to the list of messages in the first index of oldData.pages.[0].data
                 const newPages = oldData.pages.map((page: any) => {
                     if (!page.data) return page;
-                    if (find(page.data, { id: incoming.data.id })) return page;
-                    const newData = [incoming.data, ...page.data];
+                    if (find(page.data, { id: incoming.data.id })) {
+                        const newData = page.data.map((item: any) => {
+                            if (item.id === incoming.data.id) {
+                                return incoming.data;
+                            }
+                            return item;
+                        });
+                        return {
+                            ...page,
+                            data: newData,
+                        };
+                    }
                     return {
                         ...page,
-                        data: newData,
+                        data: [incoming.data, ...page.data],
                     };
                 });
                 return {
@@ -106,6 +116,7 @@ export default function useChatSocket({
                             return {
                                 ...item,
                                 content: data.content,
+                                updatedAt: data.updatedAt,
                             };
                         }
                         return item;
@@ -125,26 +136,25 @@ export default function useChatSocket({
     );
 
     useEffect(() => {
-        pusherClient.subscribe(toPusherKey(queryKey));
-        pusherClient.bind(toPusherKey(`${type}:new`), newMessageHandler);
+        pusherClient.subscribe(toPrivateKey(toPusherKey(queryKey)));
+        pusherClient.bind(toPusherKey(`message:new`), newMessageHandler);
         pusherClient.bind(
-            toPusherKey(`${type}:deleted`),
+            toPusherKey(`message:deleted`),
             deletedMessageHandler
         );
         pusherClient.bind(
-            toPusherKey(`${type}:updated`),
+            toPusherKey(`message:updated`),
             updatedMessageHandler
         );
 
         return () => {
-            pusherClient.unsubscribe(toPusherKey(queryKey));
-            pusherClient.unbind(toPusherKey(`${type}:new`));
-            pusherClient.unbind(toPusherKey(`${type}:deleted`));
-            pusherClient.unbind(toPusherKey(`${type}:updated`));
+            pusherClient.unsubscribe(toPrivateKey(toPusherKey(queryKey)));
+            pusherClient.unbind(toPusherKey(`message:new`));
+            pusherClient.unbind(toPusherKey(`message:deleted`));
+            pusherClient.unbind(toPusherKey(`message:updated`));
         };
     }, [
         queryKey,
-        type,
         newMessageHandler,
         deletedMessageHandler,
         updatedMessageHandler,

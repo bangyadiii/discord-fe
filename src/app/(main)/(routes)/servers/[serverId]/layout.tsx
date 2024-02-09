@@ -4,9 +4,9 @@ import React from "react";
 import { db } from "@/lib/db";
 import { ServerWithRelation } from "@/types";
 import { User } from "@prisma/client";
-import { redirect } from "next/navigation";
 import ServerSideBar from "@/components/server/server-sidebar";
 import { useCurrentServer } from "@/hooks/store/use-current-server";
+import StoreInitializer from "@/components/StoreInitializer";
 
 export default async function ServerIDLayout({
     children,
@@ -20,19 +20,23 @@ export default async function ServerIDLayout({
     const user = await currentProfile();
     if (!user) return redirectToSignIn();
     const server = await getServer(user, serverId);
-    if (!server) return redirect("/");
-    const sessionMember = server.members?.find(
+
+    const sessionMember = server?.members?.find(
         (member) => member.userId === user.id
     );
 
     useCurrentServer.setState({
-        server,
+        server: server ?? undefined,
         sessionMember,
     });
 
     return (
         <div className="h-screen flex overflow-hidden">
             <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
+                <StoreInitializer
+                    server={server ?? undefined}
+                    sessionMember={sessionMember}
+                />
                 <ServerSideBar />
             </div>
             <div className="h-full flex-1 md:pl-60">{children}</div>
@@ -50,6 +54,7 @@ async function getServer(
             members: {
                 some: {
                     userId: profile.id,
+                    leftAt: null,
                 },
             },
         },
