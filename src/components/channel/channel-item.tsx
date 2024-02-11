@@ -5,7 +5,7 @@ import { Channel, ChannelType } from "@prisma/client";
 import { Hash, Mic, Settings } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 
 interface ChannelItemProps {
     channel: Channel;

@@ -9,7 +9,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 
 import {
     Form,
@@ -18,54 +18,43 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { Loader } from "lucide-react";
-
-const schema = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
-    serverId: z.string(),
-});
+import { createChannelCategoryValidator } from "@/lib/validations";
 
 export default function CreateChannelCategoryModal() {
     const router = useRouter();
     const params = useParams();
 
     const { isOpen, onClose, type } = useModal();
-    const [isLoading, setIsLoading] = React.useState(false);
     const isModalOpen = isOpen && type === "createChannelCategory";
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(createChannelCategoryValidator),
         defaultValues: {
             name: "",
             serverId: params?.serverId?.toString() ?? "",
         },
     });
 
+    const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (
+        values: z.infer<typeof createChannelCategoryValidator>
+    ) => {
         try {
-            setIsLoading(true);
             await axiosInstance.post("/channel-categories", values);
             form.reset();
             router.refresh();
             onClose();
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsLoading(false);
         }
     };
     const handleClose = () => {

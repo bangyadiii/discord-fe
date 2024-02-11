@@ -1,10 +1,11 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { ActionTooltip } from "../action-tooltip";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { cn } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 interface NavigationItemProps {
     id: string;
@@ -16,18 +17,27 @@ export default function NavigationItem({
     name,
     imageUrl,
 }: NavigationItemProps) {
+    const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
     const params = useParams();
     const onClick = () => {
         router.push(`/servers/${id}`);
     };
+    useEffect(() => {
+        setIsMounted(true);
+        return () => setIsMounted(false);
+    }, []);
+    if (!isMounted)
+        return (
+            <div className="flex items-center w-full h-full justify-center">
+                <Skeleton className="h-[48px] w-[48px] rounded-full" />
+            </div>
+        );
 
     return (
         <ActionTooltip label={name} align="center" side="right">
             <button
-                onClick={() => {
-                    onClick();
-                }}
+                onClick={onClick}
                 className="group relative flex items-center"
             >
                 <div
@@ -44,7 +54,7 @@ export default function NavigationItem({
                             "bg-primary/10 text-primary rounded-[16px]"
                     )}
                 >
-                    <Image fill src={imageUrl} alt={name} />
+                    <Image width={50} height={50} src={imageUrl} alt={name} />
                 </div>
             </button>
         </ActionTooltip>

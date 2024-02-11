@@ -1,15 +1,9 @@
 "use client";
 
-import {
-    Channel,
-    ChannelCategory,
-    ChannelType,
-    MembershipRole,
-} from "@prisma/client";
+import { ChannelType, MembershipRole } from "@prisma/client";
 import React from "react";
-import { ServerWithRelation } from "@/types";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { ChevronDown, Edit, Plus } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import {
     Collapsible,
     CollapsibleContent,
@@ -17,28 +11,24 @@ import {
 } from "@/components/ui/collapsible";
 import ChannelItem from "@/components/channel/channel-item";
 import { cn } from "@/lib/utils";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
+import { CategoryWithRelation } from "@/types";
 
 interface ServerSectionProps {
     label?: string;
     role?: MembershipRole;
     channelType: ChannelType;
     sectionType?: "channel" | "member";
-    server: ServerWithRelation;
-    category?: ChannelCategory & {
-        channels: Channel[] | null;
-    };
+    category?: CategoryWithRelation;
 }
 
 function ServerSection({
     label,
     role,
-    channelType,
     sectionType,
-    server,
     category,
 }: ServerSectionProps) {
-    const { onOpen, isOpen } = useModal();
+    const { onOpen } = useModal();
     const [open, setOpen] = React.useState(true);
 
     return (

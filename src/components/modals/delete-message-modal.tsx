@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { axiosInstance } from "@/lib/axios";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import {
     AlertDialog,
@@ -20,7 +19,6 @@ export default function DeleteMessageModal() {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteMessage";
     const [isLoading, setIsLoading] = React.useState(false);
-    const router = useRouter();
     const { toast } = useToast();
 
     const handleClose = () => {
@@ -29,13 +27,12 @@ export default function DeleteMessageModal() {
 
     const handleDeleteMessage = async () => {
         try {
+            if (!data?.msgUrl) {
+                throw new Error("Invalid message URL");
+            }
+
             setIsLoading(true);
-            await axiosInstance.delete<{ message: string }>(
-                `/servers/${data?.server?.id}`
-            );
-            router.refresh();
-            router.push("/");
-            window.location.reload();
+            await axiosInstance.delete<{ message: string }>(data.msgUrl);
         } catch (error: any) {
             toast({
                 title: "Oops! Something went wrong.",
@@ -43,7 +40,6 @@ export default function DeleteMessageModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-            console.error(error);
         } finally {
             setIsLoading(false);
         }

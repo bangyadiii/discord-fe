@@ -27,7 +27,7 @@ export const ActionTooltip = ({
         setIsMounted(true);
     }, []);
     if (!isMounted)
-        return <Skeleton className="w-4 h-4 rounded-full bg-background" />;
+        return <Skeleton className="w-4 h-4 rounded-full bg-secondary" />;
 
     return (
         <TooltipProvider>
@@ -35,7 +35,7 @@ export const ActionTooltip = ({
                 <TooltipTrigger className="cursor-pointer" asChild>
                     {children}
                 </TooltipTrigger>
-                <TooltipContent side={side} align={align}>
+                <TooltipContent side={side} align={align} className="bg-primary text-primary-foreground">
                     <p className="font-semibold text-sm capitalize">
                         {label.toLocaleLowerCase()}
                     </p>

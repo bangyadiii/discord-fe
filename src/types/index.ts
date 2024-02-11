@@ -1,24 +1,25 @@
 import {
     Channel,
     ChannelCategory,
+    Conversation,
+    ConversationToUser,
     DirectMessage,
     Member,
+    MembershipRole,
     Message,
     Server,
     User,
 } from "@prisma/client";
-import { Socket, Server as NetServer } from "net";
-import { Server as SocketIOServer } from "socket.io";
-import { NextApiResponse } from "next";
+
+export type MemberWithRelation = Member & {
+    user?: User;
+    role?: MembershipRole;
+};
 
 export type ServerWithRelation = Server & {
-    members: (Member & { user?: User })[] | null;
-    channels:
-        | (Channel & { messages?: Channel[]; category?: ChannelCategory })[]
-        | null;
-    channelCategories:
-        | (ChannelCategory & { channels: Channel[] | null })[]
-        | null;
+    members?: MemberWithRelation[];
+    channels?: ChannelWithRelation[];
+    channelCategories?: CategoryWithRelation[];
 };
 
 export type DirectMessageWithRelation = DirectMessage & {
@@ -26,10 +27,34 @@ export type DirectMessageWithRelation = DirectMessage & {
     receiver?: User;
 };
 
-export type NextApiResponseServerIO = NextApiResponse & {
-    socket: Socket & {
-        server: NetServer & {
-            io?: SocketIOServer;
-        };
-    };
+export type MessageWithRelation = Message & {
+    member?: Member & { user?: User };
+    channel?: Channel;
 };
+
+export type ConversationToUserWithRelation = ConversationToUser & {
+    user?: User;
+    conversation?: ConversationWithRelation;
+}
+
+export type ConversationWithRelation = Conversation & {
+    conversationToUsers?: ConversationToUserWithRelation[];
+    directMessages?: DirectMessageWithRelation[];
+};
+
+export type ChannelWithRelation = Channel & {
+    server?: ServerWithRelation;
+    messages?: MessageWithRelation[];
+    category?: CategoryWithRelation;
+};
+
+export type CategoryWithRelation = ChannelCategory & {
+    channels?: Channel[];
+    server?: ServerWithRelation;
+};
+
+export type ChatType = "channel" | "directMessage";
+
+export type ConversationId = string;
+
+export type ChannelId = string;

@@ -1,6 +1,8 @@
+import { JoinServerModal } from "@/components/modals/join-server-modal";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
+import { redirectToSignIn } from "@clerk/nextjs";
+import { notFound, redirect } from "next/navigation";
 
 interface InvitePageProps {
     params: {
@@ -9,33 +11,30 @@ interface InvitePageProps {
 }
 export default async function InvitePage({ params }: InvitePageProps) {
     const profile = await currentProfile();
-    if (!profile) return redirect("/");
-    if (!params.inviteCode) return redirect("/");
+    if (!profile) return redirectToSignIn();
+    if (!params.inviteCode) return notFound();
 
-    const existingServer = await db.server.findFirst({
+    const server = await db.server.findFirst({
         where: {
             inviteCode: params.inviteCode,
+        },
+        include: {
             members: {
-                some: {
-                    userId: profile.id,
+                where:{
+                    leftAt: null,
+                },
+                include: {
+                    user: true,
                 },
             },
         },
     });
-    if (existingServer) return redirect(`/servers/${existingServer.id}`);
-    const server = await db.server.update({
-        where: {
-            inviteCode: params.inviteCode,
-        },
-        data: {
-            members: {
-                create: {
-                    userId: profile.id,
-                },
-            },
-        },
-    });
-    if (!server) return null;
+    if (!server) return notFound();
+    const alreadyJoined = server.members.find(
+        (member) => member.userId === profile.id
+    );
 
-    return redirect(`/servers/${server.id}`);
+    if (alreadyJoined) return redirect(`/servers/${server.id}`);
+
+    return <JoinServerModal server={server} />;
 }

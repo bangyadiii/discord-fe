@@ -1,6 +1,8 @@
 import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { Message } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -32,6 +34,7 @@ export async function GET(req: NextRequest) {
                 },
                 where: {
                     channelId,
+                    deletedAt: null,
                 },
                 include: {
                     member: {
@@ -49,6 +52,7 @@ export async function GET(req: NextRequest) {
                 take: MESSAGES_BATCH,
                 where: {
                     channelId,
+                    deletedAt: null,
                 },
                 include: {
                     member: {
@@ -74,6 +78,105 @@ export async function GET(req: NextRequest) {
         console.log("MESSAGE_GET_ERROR: ", error);
         return NextResponse.json(
             { message: "Internal Error" },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const user = await currentProfile();
+        const { content, fileUrl, id } = await req.json();
+        const qs = new URL(req.url).searchParams;
+        const channelId = qs.get("channelId");
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    message: "Unauthorized",
+                },
+                { status: 401 }
+            );
+        }
+
+        if (!channelId) {
+            return NextResponse.json(
+                {
+                    message: "Channel ID required",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (!content || !id) {
+            return NextResponse.json(
+                { error: "Content and ID are required" },
+                { status: 400 }
+            );
+        }
+
+        const channel = await db.channel.findFirst({
+            where: {
+                id: channelId as string,
+            },
+            include: {
+                server: {
+                    include: {
+                        members: true,
+                    },
+                },
+            },
+        });
+
+        if (!channel) {
+            return NextResponse.json(
+                { message: "Channel not found" },
+                { status: 404 }
+            );
+        }
+
+        const member = channel.server.members.find(
+            (member) => member.userId == user.id
+        );
+        if (!member) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const message = await db.message.create({
+            data: {
+                id,
+                content,
+                fileUrl,
+                channelId: channelId,
+                memberId: member.id,
+            },
+            include: {
+                member: {
+                    include: {
+                        user: true,
+                    },
+                },
+                channel: true,
+            },
+        });
+        await pusherServer.trigger(
+            toPrivateKey(toPusherKey(`chat:channel:${channelId}`)),
+            toPusherKey("message:new"),
+            {
+                data: message,
+            }
+        );
+
+        return NextResponse.json({ data: message }, { status: 201 });
+    } catch (error: any) {
+        console.log("POST_MESSAGE", error);
+        return NextResponse.json(
+            {
+                message: error.message || "Internal Error",
+            },
             { status: 500 }
         );
     }

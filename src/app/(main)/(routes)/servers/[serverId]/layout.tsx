@@ -1,28 +1,60 @@
-import ServerSideBar from "@/components/server/server-sidebar";
 import { currentProfile } from "@/lib/current-profile";
-import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import React from "react";
+import { db } from "@/lib/db";
+import { ServerWithRelation } from "@/types";
+import { User } from "@prisma/client";
+import ServerSideBar from "@/components/server/server-sidebar";
+import { useCurrentServer } from "@/hooks/store/use-current-server";
+import StoreInitializer from "@/components/StoreInitializer";
 
 export default async function ServerIDLayout({
     children,
-    params,
+    params: { serverId },
 }: {
     children: React.ReactNode;
     params: {
         serverId: string;
     };
 }) {
-    const profile = await currentProfile();
+    const user = await currentProfile();
+    if (!user) return redirectToSignIn();
+    const server = await getServer(user, serverId);
 
-    if (!profile) return redirectToSignIn();
+    const sessionMember = server?.members?.find(
+        (member) => member.userId === user.id
+    );
 
+    useCurrentServer.setState({
+        server: server ?? undefined,
+        sessionMember,
+    });
+
+    return (
+        <div className="h-screen flex overflow-hidden">
+            <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
+                <StoreInitializer
+                    server={server ?? undefined}
+                    sessionMember={sessionMember}
+                />
+                <ServerSideBar />
+            </div>
+            <div className="h-full flex-1 md:pl-60">{children}</div>
+        </div>
+    );
+}
+
+async function getServer(
+    profile: User,
+    serverId: string
+): Promise<ServerWithRelation | null> {
     const server = await db.server.findUnique({
         where: {
-            id: params.serverId,
+            id: serverId,
             members: {
                 some: {
                     userId: profile.id,
+                    leftAt: null,
                 },
             },
         },
@@ -37,7 +69,7 @@ export default async function ServerIDLayout({
             },
             channels: {
                 orderBy: {
-                    createdAt: "asc",
+                    order: "asc",
                 },
             },
             channelCategories: {
@@ -50,16 +82,5 @@ export default async function ServerIDLayout({
             },
         },
     });
-
-    if (!server) return redirect("/");
-
-    return (
-        <div className="h-screen flex overflow-hidden">
-            <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
-                <ServerSideBar server={server} />
-            </div>
-
-            <div className="h-full flex-1 md:pl-60">{children}</div>
-        </div>
-    );
+    return server;
 }

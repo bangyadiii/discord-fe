@@ -1,12 +1,16 @@
-import React from "react";
-import { ScrollArea } from "../ui/scroll-area";
-import { ServerWithRelation } from "../../types";
-import { UserAvatar } from "../user-avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ServerWithRelation } from "@/types";
+import { UserAvatar } from "@/components/user-avatar";
 import { currentProfile } from "@/lib/current-profile";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import OnlineStatus from "../online-status";
-import { Separator } from "../ui/separator";
-import ChatInput from "../chat/chat-input";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import OnlineStatus from "@/components/online-status";
+import { Separator } from "@/components/ui/separator";
+import ChatInput from "@/components/chat/chat-input";
+import { cn } from "@/lib/utils";
 
 interface MemberSectionProps {
     server?: ServerWithRelation;
@@ -15,7 +19,7 @@ interface MemberSectionProps {
 export default async function MemberSection({ server }: MemberSectionProps) {
     const user = await currentProfile();
     return (
-        <div className="bg-secondary h-full w-full p-1">
+        <div className="bg-secondary h-full w-full p-3">
             <ScrollArea>
                 {server?.members?.map((member) => {
                     return (
@@ -25,11 +29,11 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                 <div className="flex flex-col gap-y-1">
                                     <div className="text-xs font-semibold flex items-center gap-x-1">
                                         {member.user?.name}{" "}
-                                        {/* {member.user?.id === user?.id && (
+                                        {member.user?.id === user?.id && (
                                             <span className="text-xs text-zinc-400">
                                                 (You)
                                             </span>
-                                        )} */}
+                                        )}
                                     </div>
                                 </div>
                             </PopoverTrigger>
@@ -65,14 +69,21 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                                 member?.joinedAt!!
                                             ).toLocaleDateString()}
                                         </p>
-                                        <ChatInput
-                                            name={member?.user?.name!}
-                                            type="directMessage"
-                                            apiURL="/dm"
-                                            query={{ 
-                                                opponentUserId: member?.user?.id,
-                                             }}
-                                        />
+                                        <div className={cn(member.user?.id === user?.id ? 'hidden' : 'block', 'mt-2')}>
+                                            <ChatInput
+                                                name={member?.user?.name!}
+                                                type="directMessage"
+                                                apiURL="/dm"
+                                                query={{
+                                                    conversationId:
+                                                        member.user?.id,
+                                                }}
+                                                include={{ 
+                                                    emoji: false,
+                                                    fileUploads: false,
+                                                 }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </PopoverContent>

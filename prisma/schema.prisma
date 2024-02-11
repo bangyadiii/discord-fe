@@ -16,13 +16,13 @@ model User {
   name           String
   email          String @unique
   provider       String
-  providerUserId String @map("provider_user_id") @unique
+  providerUserId String @unique @map("provider_user_id")
 
-  profileUrl       String          @map("profile_url") @db.Text
-  servers          Server[]
-  members          Member[]
-  sentMessages     DirectMessage[] @relation("sender")
-  receivedMessages DirectMessage[] @relation("receiver")
+  profileUrl          String               @map("profile_url") @db.Text
+  servers             Server[]
+  members             Member[]
+  sentMessages        DirectMessage[]      @relation("sender")
+  conversationsToUser ConversationToUser[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -125,7 +125,6 @@ model Message {
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-  readAt    DateTime? @map("read_at")
   deletedAt DateTime? @map("deleted_at")
 
   @@index([channelId])
@@ -133,23 +132,48 @@ model Message {
   @@map("messages")
 }
 
+model Conversation {
+  id            String   @id @default(uuid()) @map("id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  lastMessageAt DateTime @default(now()) @map("last_message_at")
+  isGroup       Boolean  @default(false) @map("is_group")
+
+  conversationToUsers ConversationToUser[]
+  directMessages      DirectMessage[]
+
+  @@map("conversations")
+}
+
+model ConversationToUser {
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leftAt         DateTime?    @map("left_at")
+  mutedUntil     DateTime?    @map("muted_until")
+
+  @@id([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+  @@map("user_conversations")
+}
+
 model DirectMessage {
   id      String  @id @default(uuid()) @map("id")
   content String  @map("content") @db.Text
   fileUrl String? @map("file_url") @db.Text
 
-  senderId   String @map("sender_id")
-  sender     User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
-  receiverId String @map("receiver_id")
-  receiver   User   @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+  senderId String @map("sender_id")
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  readAt    DateTime? @map("read_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  readAt         DateTime?    @map("read_at")
+  deletedAt      DateTime?    @map("deleted_at")
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  @@index([receiverId])
-  @@index([senderId, receiverId])
-
+  @@index([senderId])
+  @@index([conversationId])
   @@map("direct_messages")
 }

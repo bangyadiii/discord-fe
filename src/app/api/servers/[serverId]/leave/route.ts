@@ -20,21 +20,39 @@ export async function PATCH(
                 { status: 400 }
             );
 
-        const server = await db.server.update({
+        const server = await db.server.findUnique({
             where: {
                 id: params.serverId,
-                NOT: {
-                    ownerId: profile.id,
-                },
             },
-            data: {
+            include: {
                 members: {
-                    deleteMany: { id: profile.id },
+                    include: {
+                        user: true,
+                    },
                 },
             },
         });
 
-        if (!server)
+        if(!server) return NextResponse.json({ message: "Server not found" }, { status: 404 });
+
+        const member = server?.members?.find(
+            (member) => member.userId === profile.id
+        );
+        if (!member)
+            return NextResponse.json(
+                { message: "You are not a member of this server." },
+                { status: 400 }
+            );
+        const updatedMember = await db.member.update({
+            where: {
+                id: member.id,
+            },
+            data: {
+                leftAt: new Date(),
+            },
+        });
+
+        if (!updatedMember)
             return NextResponse.json(
                 {
                     message:

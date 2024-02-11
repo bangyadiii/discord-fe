@@ -18,7 +18,7 @@ export const initialProfile = async (): Promise<User> => {
         data: {
             id: user.id,
             email: user.emailAddresses[0].emailAddress,
-            name: user.firstName + " " + user.lastName,
+            name: user.firstName + (user.lastName ? ` ${user.lastName}` : ""),
             profileUrl: user.imageUrl,
             providerUserId: user.id,
             provider: "google",

@@ -10,15 +10,15 @@ import {
 } from "../ui/dialog";
 
 import React from "react";
-import { useModal } from "../../hooks/use-modal-store";
-import { Button } from "../ui/button";
+import { useModal } from "@/hooks/store/use-modal-store";
+import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/axios";
 import { Server } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function LeaveServerModal() {
-    const { isOpen, onClose, type, data, onOpen } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "leaveServer";
     const [isLoading, setIsLoading] = React.useState(false);
     const router = useRouter();
@@ -43,9 +43,9 @@ export default function LeaveServerModal() {
                 duration: 5000,
                 className: "bg-red-500",
             });
-            console.log(error);
         } finally {
             setIsLoading(false);
+            onClose();
         }
     };
 

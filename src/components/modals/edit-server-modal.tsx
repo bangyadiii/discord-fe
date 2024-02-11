@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { LoaderIcon } from "lucide-react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,20 +18,15 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { ModeToggle } from "../ModeToggle";
-import { Button } from "../ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import React, { useEffect } from "react";
-import FileUpload from "../file-upload";
+import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
-
-const schema = z.object({
-    name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
-    imageUrl: z.string().url(),
-});
+import { useModal } from "@/hooks/store/use-modal-store";
+import { inputServerValidator } from "@/lib/validations";
+import { Button } from "@/components/ui/button";
 
 export default function EditServerModal() {
     const router = useRouter();
@@ -40,7 +34,7 @@ export default function EditServerModal() {
     const isModalOpen = isOpen && type === "editServer";
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(inputServerValidator),
         defaultValues: {
             name: "",
             imageUrl: "",
@@ -53,7 +47,7 @@ export default function EditServerModal() {
         }
     }, [data?.server, form]);
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof inputServerValidator>) => {
         if (!data?.server?.id) {
             return;
         }

@@ -1,6 +1,8 @@
 import { MESSAGES_BATCH } from "@/config/app";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
+import { toPrivateKey, toPusherKey } from "@/lib/utils";
 import { DirectMessage } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,12 +17,12 @@ export async function GET(req: NextRequest) {
             );
 
         const qs = new URL(req.url).searchParams;
-        const opponentUserId = qs.get("opponentUserId");
+        const conversationId = qs.get("conversationId");
         const cursor = qs.get("cursor");
 
-        if (!opponentUserId)
+        if (!conversationId)
             return NextResponse.json(
-                { message: "Opponent user id is required" },
+                { message: "conversation id is required" },
                 { status: 400 }
             );
 
@@ -33,20 +35,12 @@ export async function GET(req: NextRequest) {
                     id: cursor,
                 },
                 where: {
-                    OR: [
-                        {
-                            senderId: user.id,
-                            receiverId: opponentUserId,
-                        },
-                        {
-                            senderId: opponentUserId,
-                            receiverId: user.id,
-                        },
-                    ],
+                    conversationId,
+                    deletedAt: null,
                 },
                 include: {
                     sender: true,
-                    receiver: true,
+                    conversation: true,
                 },
                 orderBy: {
                     createdAt: "desc",
@@ -56,20 +50,12 @@ export async function GET(req: NextRequest) {
             messages = await db.directMessage.findMany({
                 take: MESSAGES_BATCH,
                 where: {
-                    OR: [
-                        {
-                            senderId: user.id,
-                            receiverId: opponentUserId,
-                        },
-                        {
-                            senderId: opponentUserId,
-                            receiverId: user.id,
-                        },
-                    ],
+                    conversationId,
+                    deletedAt: null,
                 },
                 include: {
                     sender: true,
-                    receiver: true,
+                    conversation: true,
                 },
                 orderBy: {
                     createdAt: "desc",
@@ -101,32 +87,41 @@ export async function POST(req: NextRequest) {
                 { status: 401 }
             );
 
-        const { content } = await req.json();
+        const { content, id } = await req.json();
         const qs = new URL(req.url).searchParams;
 
-        if (!content)
+        if (!content || !id)
             return NextResponse.json(
-                { message: "Content is required" },
+                { message: "Content and Id are required." },
                 { status: 400 }
             );
 
-        if (!qs.has("opponentUserId"))
+        const conversationId = qs.get("conversationId");
+        if (!conversationId)
             return NextResponse.json(
-                { message: "Receiver ID is required" },
+                { message: "conversation ID is required" },
                 { status: 400 }
             );
 
         const dm = await db.directMessage.create({
             data: {
-                content: content,
+                id,
+                content,
                 senderId: user.id,
-                receiverId: qs.get("opponentUserId")!,
+                conversationId,
             },
             include: {
                 sender: true,
-                receiver: true,
             },
         });
+
+        await pusherServer.trigger(
+            toPrivateKey(toPusherKey(`chat:directMessage:${conversationId}`)),
+            toPusherKey("message:new"),
+            {
+                data: dm,
+            }
+        );
 
         return NextResponse.json({ data: dm }, { status: 201 });
     } catch (error: any) {

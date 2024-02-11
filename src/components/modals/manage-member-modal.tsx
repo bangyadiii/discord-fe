@@ -19,17 +19,13 @@ import {
 } from "../ui/dialog";
 
 import React from "react";
-import { useModal } from "../../hooks/use-modal-store";
-import { ServerWithRelation } from "../../types";
-import { ScrollArea } from "../ui/scroll-area";
-import { UserAvatar } from "../user-avatar";
+import { useModal } from "@/hooks/store/use-modal-store";
+import { ServerWithRelation } from "@/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserAvatar } from "@/components/user-avatar";
 import { MembershipRole } from "@prisma/client";
-import { ActionTooltip } from "../action-tooltip";
-
-const schema = z.object({
-    name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
-    imageUrl: z.string().url(),
-});
+import { ActionTooltip } from "@/components/action-tooltip";
+import { inputServerValidator } from "@/lib/validations";
 
 export default function ManageMember() {
     const { isOpen, onClose, type, data } = useModal();
@@ -37,7 +33,7 @@ export default function ManageMember() {
     const { server } = data as { server: ServerWithRelation };
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(inputServerValidator),
         defaultValues: {
             name: "",
             imageUrl: "",

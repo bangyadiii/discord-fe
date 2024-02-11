@@ -18,37 +18,25 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axios";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
 import { Channel, ChannelType } from "@prisma/client";
 import { Loader2, Trash } from "lucide-react";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
     Sheet,
     SheetContent,
     SheetFooter,
     SheetHeader,
     SheetTitle,
-} from "../ui/sheet";
+} from "@/components/ui/sheet";
 import { channelIconMap } from "../server/server-sidebar";
-
-const schema = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
-    type: z.nativeEnum(ChannelType),
-    serverId: z.string(),
-    categoryId: z.string().nullable(),
-});
+import { saveChannelValidator } from "@/lib/validations";
 
 export default function SettingChannelModal() {
     const router = useRouter();
@@ -59,7 +47,7 @@ export default function SettingChannelModal() {
     const { toast } = useToast();
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(saveChannelValidator),
         defaultValues: {
             name: data?.channel?.name ?? "",
             type: (data?.channel?.type?.toString() ??
@@ -81,7 +69,7 @@ export default function SettingChannelModal() {
 
     const Icon = channelIconMap[data?.channel?.type ?? ChannelType.TEXT];
 
-    const onSubmit = async (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof saveChannelValidator>) => {
         try {
             setIsLoading(true);
             const response = await axiosInstance.patch<{ data: Channel }>(
@@ -101,7 +89,6 @@ export default function SettingChannelModal() {
             router.refresh();
             onOpen("settingChannel", { channel: response.data?.data });
         } catch (error: any) {
-            setIsLoading(false);
             console.error(error);
             toast({
                 title: "Oops! Something went wrong.",

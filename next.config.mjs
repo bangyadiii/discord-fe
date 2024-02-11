@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
+        minimumCacheTTL: 5 * 60,
         remotePatterns: [
             {
                 hostname: "utfs.io",

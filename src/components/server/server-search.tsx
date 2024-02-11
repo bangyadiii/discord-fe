@@ -52,12 +52,9 @@ export default function ServerSearch(props: ServerSearchProps) {
     }) => {
         setOpen(false);
         if (type === "member") {
-            return router.push(
-                `/servers/${params?.serverId}/conversation/${id}`
-            );
-        } else if (type === "channel") {
-            return router.push(`/servers/${params?.serverId}/channels/${id}`);
+            return router.push(`/servers/${params?.serverId}/conversation/${id}`);
         }
+        return router.push(`/servers/${params?.serverId}/channels/${id}`);
     };
 
     return (

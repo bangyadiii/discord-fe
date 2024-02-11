@@ -1,64 +1,56 @@
-import React from "react";
 import ChatInput from "./chat-input";
-import { Channel, User } from "@prisma/client";
 import ChatMessages from "./chat-messages";
+import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
+import { auth } from "@clerk/nextjs";
+import { ChatType } from "@/types";
+import { getConversationTitle } from "@/lib/utils";
 
 interface ChatSectionProps {
-    currentChat: string;
-    chatType: "channel" | "directMessage";
-    data?: {
-        channel?: Channel;
-        opponentUser?: User;
-    };
+    chatType: ChatType;
     messageApiUrl?: string;
     pushMessageUrl?: string;
 }
 
 export default function ChatSection({
-    currentChat,
     chatType,
-    data,
-    messageApiUrl = "/api/messages",
-    pushMessageUrl = "/sockets/messages",
+    messageApiUrl = "/messages",
+    pushMessageUrl = "/messages",
 }: ChatSectionProps) {
-    let paramKey: "channelId" | "opponentUserId" = "channelId";
-    if (chatType == "channel" && !data?.channel) return null;
-    if (chatType == "directMessage" && !data?.opponentUser) return null;
-    if (chatType == "directMessage") {
-        paramKey = "opponentUserId";
+    let paramKey: "channelId" | "conversationId" =
+        chatType === "channel" ? "channelId" : "conversationId";
+    const user = auth();
+    const data = useCurrentConversation.getState();
+    if (!user) return null;
+
+    let title = data.currentChannel?.name ?? "Unknown";
+    if (chatType === "directMessage") {
+        title = getConversationTitle(data.conversation!, user.userId!);
     }
+
     return (
         <div className="h-full w-full flex flex-col justify-between">
             <ChatMessages
-                chatId={data?.channel?.id!}
+                title={title}
                 type={chatType}
                 apiUrl={messageApiUrl}
-                name={
-                    chatType === "channel"
-                        ? data?.channel?.name!
-                        : data?.opponentUser?.name!
-                }
-                socketQuery={{
-                    channelId: data?.channel?.id!,
-                    serverId: data?.channel?.serverId!,
-                }}
                 paramKey={paramKey}
                 paramValue={
-                    paramKey == "channelId"
-                        ? data?.channel?.id!
-                        : data?.opponentUser?.id!
+                    chatType == "channel"
+                        ? data?.currentChannel?.id!
+                        : data?.conversation?.id!
                 }
             />
 
-            <div className="h-[80px] w-full flex justify-center items-start">
+            <div className="h-[80px] w-full flex justify-center items-start px-8">
                 <ChatInput
-                    name={data?.opponentUser?.name!}
+                    title={title}
                     type={chatType}
                     apiURL={pushMessageUrl}
-                    query={{
-                        channelId: data?.channel?.id,
-                        serverId: data?.channel?.serverId,
-                    }}
+                    query={
+                        chatType === "channel"
+                            ? { channelId: data?.currentChannel?.id }
+                            : { conversationId: data?.conversation?.id }
+                    }
                 />
             </div>
         </div>

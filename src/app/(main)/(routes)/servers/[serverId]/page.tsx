@@ -1,7 +1,8 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { ServerWithRelation } from "@/types";
 import { redirectToSignIn } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 interface ServerPageProps {
     params?: {
@@ -9,16 +10,14 @@ interface ServerPageProps {
     };
 }
 
-export default async function ServerPage({ params }: ServerPageProps) {
-    const profile = await currentProfile();
-    if (!profile) return redirectToSignIn();
-
-    const server = await db.server.findUnique({
+async function getCurrentServer(serverId: string, userId: string): Promise<Partial<ServerWithRelation> | null> {
+    return await db.server.findUnique({
         where: {
-            id: params?.serverId,
+            id: serverId,
             members: {
                 some: {
-                    userId: profile.id,
+                    userId: userId,
+                    leftAt: null,
                 },
             },
         },
@@ -30,9 +29,19 @@ export default async function ServerPage({ params }: ServerPageProps) {
             },
         },
     });
+}
 
-    if (!server) return <div>Channel not found</div>;
-    const initialChannel = server?.channels.find((channel) => channel.type === "TEXT");
+export default async function ServerPage({ params }: ServerPageProps) {
+    const profile = await currentProfile();
+    if (!profile) return redirectToSignIn();
+
+    if(!params?.serverId) return redirect("/");
+    const server = await getCurrentServer(params?.serverId, profile.id);
+    if(!server) return notFound();
+
+    const initialChannel = server?.channels?.find(
+        (channel) => channel.type === "TEXT"
+    );
 
     return redirect(
         `/servers/${params?.serverId}/channels/${initialChannel?.id}`

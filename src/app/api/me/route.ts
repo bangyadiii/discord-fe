@@ -1,7 +1,7 @@
 import { currentProfile } from "@/lib/current-profile";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export default async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const user = await currentProfile();
         if (!user) {

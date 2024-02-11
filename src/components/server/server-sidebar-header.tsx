@@ -1,14 +1,12 @@
 "use client";
 
-import { MembershipRole, Server } from "@prisma/client";
-import { ServerWithRelation } from "../../types";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
     ChevronDown,
     FolderPlus,
@@ -16,26 +14,22 @@ import {
     PlusCircle,
     Settings,
     Trash,
-    UserPlus,
     UserRoundPlus,
     Users,
 } from "lucide-react";
-import { useModal } from "../../hooks/use-modal-store";
+import { useModal } from "@/hooks/store/use-modal-store";
+import { MemberWithRelation, ServerWithRelation } from "@/types";
 
 interface ServerSideBarHeaderProps {
     server: ServerWithRelation;
-    role?: MembershipRole;
+    sessionMember: MemberWithRelation;
 }
+
 export default function ServerSideBarHeader({
     server,
-    role,
+    sessionMember,
 }: ServerSideBarHeaderProps) {
     const { onOpen } = useModal();
-    const owner = server.members?.find((member) => member.role === "OWNER");
-    const admins = server.members?.filter((member) => member.role === "ADMIN");
-    const members = server.members?.filter(
-        (member) => member.role === "MEMBER"
-    );
 
     return (
         <DropdownMenu>
@@ -56,7 +50,8 @@ export default function ServerSideBarHeader({
                     <UserRoundPlus className="h-4 w-4 ml-auto" />
                 </DropdownMenuItem>
 
-                {(role === "OWNER" || role === "ADMIN") && (
+                {(sessionMember.role === "OWNER" ||
+                    sessionMember.role === "ADMIN") && (
                     <DropdownMenuItem
                         className="px-3 py-2 text-sm cursor-pointer"
                         onClick={() => {
@@ -68,7 +63,8 @@ export default function ServerSideBarHeader({
                     </DropdownMenuItem>
                 )}
 
-                {(role === "OWNER" || role === "ADMIN") && (
+                {(sessionMember.role === "OWNER" ||
+                    sessionMember.role === "ADMIN") && (
                     <DropdownMenuItem
                         className="px-3 py-2 text-sm cursor-pointer"
                         onClick={() => {
@@ -80,7 +76,8 @@ export default function ServerSideBarHeader({
                     </DropdownMenuItem>
                 )}
 
-                {(role === "OWNER" || role === "ADMIN") && (
+                {(sessionMember.role === "OWNER" ||
+                    sessionMember.role === "ADMIN") && (
                     <DropdownMenuItem
                         className="px-3 py-2 text-sm cursor-pointer"
                         onClick={() => {
@@ -92,7 +89,8 @@ export default function ServerSideBarHeader({
                     </DropdownMenuItem>
                 )}
 
-                {(role === "OWNER" || role === "ADMIN") && (
+                {(sessionMember.role === "OWNER" ||
+                    sessionMember.role === "ADMIN") && (
                     <DropdownMenuItem
                         className="px-3 py-2 text-sm cursor-pointer"
                         onClick={() => {
@@ -114,7 +112,7 @@ export default function ServerSideBarHeader({
                     Leave Server
                     <LogOut className="h-4 w-4 ml-auto" />
                 </DropdownMenuItem>
-                {role === "OWNER" && (
+                {sessionMember.role === "OWNER" && (
                     <DropdownMenuItem
                         className="px-3 py-2 text-sm cursor-pointer text-red-500"
                         onClick={() => {
