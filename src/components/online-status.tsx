@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { ActionTooltip } from "./action-tooltip";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "./ui/skeleton";
 
 interface OnlineStatusProps {
     className?: string;
@@ -19,7 +18,7 @@ export default function OnlineStatus({
         setIsMounted(true);
     }, []);
 
-    if (!isMounted) return <Skeleton className="rounded-full w-2 h-2" />;
+    if (!isMounted) return null;
 
     return (
         <ActionTooltip label={isConnected ? "Online" : "Offline"} side={side}>

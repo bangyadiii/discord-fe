@@ -5,12 +5,29 @@ import {
     MessageWithRelation,
 } from "@/types";
 import { User } from "@prisma/client";
-import { find } from "lodash";
 import queryString from "query-string";
-import { useMutation, useQueryClient } from "react-query";
+import { MutationKey, useMutation, useQueryClient } from "react-query";
 
+const postChatFn = (endpoint: string, query: Record<string, any>) => {
+    return (newMessage: {
+        content: string;
+        id: string;
+        fileUrl?: string;
+        member?: MemberWithRelation;
+        user?: Partial<User>;
+    }) => {
+        const url = queryString.stringifyUrl({
+            url: endpoint,
+            query,
+        });
+        return axiosInstance.post<{
+            message?: string;
+            data?: DirectMessageWithRelation | MessageWithRelation;
+        }>(url, newMessage);
+    };
+};
 
-export default function useChatMutation({
+export default function usePostChatMutation({
     queryKey,
     apiURL,
     query,
@@ -21,31 +38,13 @@ export default function useChatMutation({
 }) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newMessage: {
-            content: string;
-            id: string;
-            fileUrl?: string;
-            member?: MemberWithRelation;
-            user?: Partial<User>;
-        }) => {
-            const url = queryString.stringifyUrl({
-                url: apiURL,
-                query,
-            });
-            return axiosInstance.post<{
-                message?: string;
-                data?: DirectMessageWithRelation | MessageWithRelation;
-            }>(url, newMessage);
-        },
+        mutationKey: [queryKey],
+        mutationFn: postChatFn(apiURL, query),
         onMutate: async (newMessage) => {
+            await queryClient.cancelQueries({ queryKey: [queryKey] });
             const prevMessages = queryClient.getQueryData([queryKey]);
             queryClient.setQueryData([queryKey], (oldData: any) => {
-                if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-                    return oldData;
-                }
                 const newPages = oldData.pages.map((page: any) => {
-                    if (!page.data) return page;
-                    if (find(page.data, { id: newMessage.id })) return page;
                     const newData = [newMessage, ...page.data];
                     return {
                         ...page,

@@ -12,7 +12,7 @@ export default function UserInformation() {
 
     if (!isLoaded) {
         return (
-            <div className="w-full dark:bg-[#1E1F22] bg-slate-200 p-3 flex gap-x-3">
+            <div className="w-full dark:bg-[#1E1F22] bg-zinc-200 p-3 flex gap-x-3">
                 <div className="relative w-10 h-10">
                     <Skeleton className="w-10 h-10 rounded-full" />
                 </div>
@@ -25,11 +25,11 @@ export default function UserInformation() {
     }
 
     return (
-        <div className="w-full dark:bg-[#1E1F22] bg-slate-200 p-[10px] flex gap-x-3">
+        <div className="w-full dark:bg-[#1E1F22] bg-zinc-200 p-[10px] flex gap-x-3">
             <div className="relative w-10 h-10">
                 <UserAvatar src={user?.imageUrl!} className="w-4 h-4" />
                 <OnlineStatus
-                    className="w-[11px] h-[11px] absolute bottom-1 right-0 ring-4 ring-slate-200 dark:ring-[#1E1F22]"
+                    className="w-[11px] h-[11px] absolute bottom-1 right-0 ring-4 ring-zinc-200 dark:ring-[#1E1F22]"
                     side="right"
                 />
             </div>

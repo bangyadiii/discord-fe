@@ -7,25 +7,22 @@ import useChatQuery from "@/hooks/query/use-chat-query";
 import { ServerCrash } from "lucide-react";
 import ChatItem from "./chat-item";
 import ChatMessagesSkeleton from "./chat-messages-skeleton";
-import { Channel, User } from "@prisma/client";
 import { ChatType } from "@/types";
 import { useQueryClient } from "react-query";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 import useChatSocket from "@/hooks/use-chat-socket";
 
 interface ChatMessagesProps {
+    title: string;
     apiUrl: string;
     paramKey: "channelId" | "conversationId";
     paramValue: string;
     type: ChatType;
-    partner?: User;
-    channel?: Channel;
     className?: string;
 }
 
 export default function ChatMessages({
-    partner,
-    channel,
+    title,
     apiUrl,
     paramKey,
     paramValue,
@@ -90,7 +87,7 @@ export default function ChatMessages({
             {!hasNextPage && (
                 <ChatWelcome
                     type={type}
-                    name={type !== "channel" ? partner?.name! : channel?.name!}
+                    name={title}
                 />
             )}
         </div>

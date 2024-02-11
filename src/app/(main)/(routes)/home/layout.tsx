@@ -37,14 +37,19 @@ async function getConversations(
 ): Promise<ConversationWithRelation[]> {
     return await db.conversation.findMany({
         where: {
-            users: {
+            conversationToUsers: {
                 some: {
-                    id: user.id,
+                    userId: user.id,
+                    leftAt: null,
                 },
             },
         },
         include: {
-            users: true,
+            conversationToUsers: {
+                include: {
+                    user: true,
+                },
+            },
             directMessages: {
                 take: MESSAGES_BATCH,
                 include: {

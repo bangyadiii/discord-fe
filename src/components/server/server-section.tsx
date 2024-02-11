@@ -1,11 +1,6 @@
 "use client";
 
-import {
-    Channel,
-    ChannelCategory,
-    ChannelType,
-    MembershipRole,
-} from "@prisma/client";
+import { ChannelType, MembershipRole } from "@prisma/client";
 import React from "react";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { ChevronDown, Plus } from "lucide-react";
@@ -17,15 +12,14 @@ import {
 import ChannelItem from "@/components/channel/channel-item";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/hooks/store/use-modal-store";
+import { CategoryWithRelation } from "@/types";
 
 interface ServerSectionProps {
     label?: string;
     role?: MembershipRole;
     channelType: ChannelType;
     sectionType?: "channel" | "member";
-    category?: ChannelCategory & {
-        channels: Channel[] | null;
-    };
+    category?: CategoryWithRelation;
 }
 
 function ServerSection({

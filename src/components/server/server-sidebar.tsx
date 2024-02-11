@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import UserInformation from "@/components/user-information";
 import { useCurrentServer } from "@/hooks/store/use-current-server";
 import ChannelList from "./channel-list";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const channelIconMap = {
     [ChannelType.TEXT]: <Hash className="h-4 w-4" />,
@@ -26,7 +27,12 @@ export default async function ServerSideBar() {
     const user = await currentProfile();
     if (!user) return redirectToSignIn();
     const { server, sessionMember } = useCurrentServer.getState();
-    if (!server || !sessionMember) throw new Error("Server state invalid");
+    if (!server || !sessionMember)
+        return (
+            <div className="flex flex-col h-full w-full bg-secondary">
+                <Skeleton className="h-10 w-10 rounded-md my-2" />
+            </div>
+        );
 
     return (
         <div className="flex flex-col h-full w-full bg-secondary">

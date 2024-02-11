@@ -27,16 +27,27 @@ export default async function ConversationPage({
         conversation,
     });
 
-    const partner = conversation.users.find((u) => u.id !== user.id);
+    const partner = conversation.conversationToUsers
+        .map((c) => c.user)
+        .find((u) => u.id !== user.id);
     if (!partner) return notFound();
+
+    const groupName = conversation.conversationToUsers
+        .filter((convUser) => convUser.user?.id !== user?.id)
+        .map((convUser) => convUser.user?.name)
+        .join(", ");
 
     return (
         <div className="flex flex-col h-full">
             <div className="h-[50px]">
                 <ChatHeader
-                    label={partner.name}
+                    label={conversation.isGroup ? groupName : partner.name}
                     type="directMessage"
-                    imageUrl={partner.profileUrl}
+                    imageUrl={
+                        conversation.isGroup
+                            ? "https://utfs.io/f/f80780dc-4a3a-4182-942a-0e4bdd6f060a-1mpytb.webp"
+                            : partner.profileUrl
+                    }
                 />
             </div>
             <div className="h-[calc(100%-50px)]">
@@ -49,7 +60,11 @@ export default async function ConversationPage({
                         />
                     </div>
                     <div className="w-[320px] hidden lg:block h-full bg-secondary text-secondary-foreground">
-                        <PartnerDetail />
+                        {conversation.isGroup ? (
+                            "member group"
+                        ) : (
+                            <PartnerDetail />
+                        )}
                     </div>
                 </div>
             </div>
@@ -63,7 +78,11 @@ async function getData(conversationId: string) {
             id: conversationId,
         },
         include: {
-            users: true,
+            conversationToUsers: {
+                include: {
+                    user: true,
+                },
+            },
             directMessages: {
                 take: MESSAGES_BATCH,
                 include: {

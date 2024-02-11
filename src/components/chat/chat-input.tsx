@@ -4,12 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Plus } from "lucide-react";
 import EmojiPicker from "@/components/emoji-picker";
 import { chatInputValidator } from "@/lib/validations";
@@ -18,7 +13,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { useCurrentServer } from "@/hooks/store/use-current-server";
 import useCurrentUserQuery from "@/hooks/query/use-current-user";
-import useChatMutation from "@/hooks/query/use-chat-mutation";
+import usePostChatMutation from "@/hooks/query/use-chat-mutation";
+import { ChatType } from "@/types";
 
 interface Options {
     fileUploads: boolean;
@@ -28,15 +24,15 @@ interface Options {
 interface ChatInputProps {
     apiURL: string;
     query: Record<string, any>;
-    name: string;
-    type: "channel" | "directMessage";
+    title: string;
+    type: ChatType;
     include?: Options;
 }
 
 export default function ChatInput({
     apiURL,
     query,
-    name,
+    title,
     type,
     include = { fileUploads: true, emoji: true },
 }: ChatInputProps) {
@@ -52,20 +48,19 @@ export default function ChatInput({
     }`;
     const sessionMember = useCurrentServer((s) => s.sessionMember);
 
-    const mutation = useChatMutation({queryKey, apiURL, query});
+    const mutation = usePostChatMutation({ queryKey, apiURL, query });
 
     const handleOnSubmit = async (data: z.infer<typeof chatInputValidator>) => {
-        try {
-            mutation.mutate({
-                ...data,
-                id: uuidv4(),
-                member: sessionMember,
-                user: user?.data,
-            });
-            form.reset();
-        } catch (error: any) {
-            throw new Error(error);
-        }
+        const object = {
+            ...data,
+            id: uuidv4(),
+            channelId: query.channelId,
+            conversationId: query.conversationId,
+            member: sessionMember,
+            sender: user?.data,
+        };
+        mutation.mutate(object);
+        form.reset();
     };
 
     const renderFileUploadButton = () => {
@@ -86,24 +81,22 @@ export default function ChatInput({
             <button type="button" className="absolute right-4 top-3">
                 <EmojiPicker
                     onChange={(emoji: string) => {
-                        form.setValue("content", `${form.getValues().content}${emoji}`);
+                        form.setValue(
+                            "content",
+                            `${form.getValues().content}${emoji}`
+                        );
                     }}
                 />
             </button>
         );
     };
 
-    const renderInputPlaceholder = () => {
-        if (type === "channel") {
-            return `Message #${name}`;
-        } else {
-            return `Message @${name}`;
-        }
-    };
-
     return (
         <Form {...form}>
-            <form className="w-full" onSubmit={form.handleSubmit(handleOnSubmit)}>
+            <form
+                className="w-full"
+                onSubmit={form.handleSubmit(handleOnSubmit)}
+            >
                 <FormField
                     name="content"
                     control={form.control}
@@ -118,7 +111,9 @@ export default function ChatInput({
                                             include.emoji && "pr-14",
                                             "py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-300"
                                         )}
-                                        placeholder={renderInputPlaceholder()}
+                                        placeholder={`Message ${
+                                            type === "channel" ? "#" : "@"
+                                        }${title}`}
                                         {...field}
                                     />
                                     {renderEmojiButton()}

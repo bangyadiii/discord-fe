@@ -53,6 +53,24 @@ export default async function handler(
                 return res.status(403).json({ message: "Unauthorized" });
             }
         }
+        else if(type === 'directMessage') {
+            const conversation = await db.conversation.findUnique({
+                where: {
+                    id,
+                },
+                include: {
+                    conversationToUsers: {
+                        where: {
+                            userId: user.id,
+                            leftAt: null,
+                        },
+                    },
+                },
+            });
+            if (!conversation) {
+                return res.status(403).json({ message: "Unauthorized" });
+            }
+        }
 
         const data: PresenceChannelData = {
             user_id: user.id,

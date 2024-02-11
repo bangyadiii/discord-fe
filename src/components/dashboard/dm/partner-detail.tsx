@@ -13,9 +13,9 @@ export default function PartnerDetail() {
     const conversation = useCurrentConversation.getState().conversation;
     if (!conversation) throw new Error("Conversation data needed");
 
-    const currentPartner = conversation?.users.find(
-        (partners) => partners.id !== userId
-    );
+    const currentPartner = conversation?.conversationToUsers?.find(
+        (c) => c.userId !== userId
+    )?.user;
 
     return (
         <div className="flex flex-col gap-y-1 ">
@@ -40,7 +40,7 @@ export default function PartnerDetail() {
                     MEMBER SINCE
                 </p>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                    {formatTimeForHuman(currentPartner?.createdAt!)}
+                    {formatTimeForHuman(currentPartner?.createdAt!) ?? "Pending"}
                 </p>
             </div>
         </div>

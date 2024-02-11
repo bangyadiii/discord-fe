@@ -4,7 +4,7 @@ import NavigationAction from "./navigation-action";
 import NavigationItem from "./navigation-item";
 import { ModeToggle } from "@/components/ModeToggle";
 import { UserButton } from "@clerk/nextjs";
-import NavigationDM from "./navigation-dm";
+import NavigationDashboard from "./navigation-dashboard";
 import { ServerWithRelation } from "@/types";
 
 interface NavigationSideBarProps {
@@ -16,18 +16,19 @@ export default async function NavigationSideBar({
 }: NavigationSideBarProps) {
     return (
         <nav className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-zinc-200 dark:bg-[#1E1F22] py-3">
-            <NavigationDM />
+            <NavigationDashboard />
             <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
             <ScrollArea className="flex-1 w-full">
-                {servers?.length > 0 && servers.map((server) => (
-                    <div key={server.id} className="mb-4">
-                        <NavigationItem
-                            id={server.id}
-                            name={server.name}
-                            imageUrl={server.imageUrl}
-                        />
-                    </div>
-                ))}
+                {servers?.length > 0 &&
+                    servers.map((server) => (
+                        <div key={server.id} className="mb-4">
+                            <NavigationItem
+                                id={server.id}
+                                name={server.name}
+                                imageUrl={server.imageUrl}
+                            />
+                        </div>
+                    ))}
             </ScrollArea>
             <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
             <NavigationAction />

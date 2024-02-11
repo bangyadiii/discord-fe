@@ -4,15 +4,29 @@ import { ActionTooltip } from "@/components/action-tooltip";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { default as DiscordIcon } from "@/../public/discord-icon.svg";
+import { useEffect, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
-export default function NavigationDM() {
+export default function NavigationDashboard() {
+    const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
+
+    useEffect(() => {
+        setIsMounted(true);
+        return () => setIsMounted(false);
+    }, []);
 
     const handleOnClick = () => {
         router.push(`/home`);
     };
     const isCurrentPath = pathname?.includes("/home");
+    if (!isMounted)
+        return (
+            <div className="flex items-center w-full justify-center">
+                <Skeleton className="h-[48px] w-[48px] rounded-full" />
+            </div>
+        );
     return (
         <ActionTooltip label="Direct Message" align="center" side="right">
             <button
@@ -34,7 +48,7 @@ export default function NavigationDM() {
                 >
                     <DiscordIcon
                         className={cn(
-                            "w-7 h-7 text-primary dark:text-slate-200 group-hover:text-white transition",
+                            "w-7 h-7 text-primary dark:text-zinc-200 group-hover:text-white transition",
                             isCurrentPath && "text-white"
                         )}
                     />

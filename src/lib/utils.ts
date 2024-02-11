@@ -23,6 +23,36 @@ export function formatTimeForHuman(timestamp: string | number | Date) {
     return format(time, DateTimeFormat);
 }
 
+export function getConversationTitle(
+    conversation: {
+        isGroup: boolean;
+        conversationToUsers?: {
+            userId: string;
+            user?: { name: string };
+            leftAt: Date | null;
+        }[];
+    },
+    userId: string
+): string {
+    let title: string = "";
+    if (conversation?.isGroup) {
+        title =
+            conversation?.conversationToUsers
+                ?.filter(
+                    (convUser) =>
+                        convUser.userId !== userId && convUser.leftAt == null
+                )
+                .map((convUser) => convUser.user?.name)
+                .join(", ") ?? "Unknown";
+    } else {
+        title =
+            conversation?.conversationToUsers?.find(
+                (convUser) => convUser.userId !== userId
+            )?.user?.name ?? "Unknown";
+    }
+    return title;
+}
+
 export function toPusherKey(key: string) {
     return key.replace(/:/g, "__");
 }

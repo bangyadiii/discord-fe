@@ -2,6 +2,7 @@ import {
     Channel,
     ChannelCategory,
     Conversation,
+    ConversationToUser,
     DirectMessage,
     Member,
     MembershipRole,
@@ -17,9 +18,8 @@ export type MemberWithRelation = Member & {
 
 export type ServerWithRelation = Server & {
     members?: MemberWithRelation[];
-    channels?:
-        | (Channel & { messages?: Channel[]; category?: ChannelCategory })[];
-    channelCategories?: (ChannelCategory & { channels?: Channel[] | null })[];
+    channels?: ChannelWithRelation[];
+    channelCategories?: CategoryWithRelation[];
 };
 
 export type DirectMessageWithRelation = DirectMessage & {
@@ -32,14 +32,25 @@ export type MessageWithRelation = Message & {
     channel?: Channel;
 };
 
+export type ConversationToUserWithRelation = ConversationToUser & {
+    user?: User;
+    conversation?: ConversationWithRelation;
+}
+
 export type ConversationWithRelation = Conversation & {
-    users: User[];
-    directMessages: DirectMessageWithRelation[];
+    conversationToUsers?: ConversationToUserWithRelation[];
+    directMessages?: DirectMessageWithRelation[];
 };
 
 export type ChannelWithRelation = Channel & {
     server?: ServerWithRelation;
     messages?: MessageWithRelation[];
+    category?: CategoryWithRelation;
+};
+
+export type CategoryWithRelation = ChannelCategory & {
+    channels?: Channel[];
+    server?: ServerWithRelation;
 };
 
 export type ChatType = "channel" | "directMessage";

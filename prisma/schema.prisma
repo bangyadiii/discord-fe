@@ -18,11 +18,11 @@ model User {
   provider       String
   providerUserId String @unique @map("provider_user_id")
 
-  profileUrl    String          @map("profile_url") @db.Text
-  servers       Server[]
-  members       Member[]
-  sentMessages  DirectMessage[] @relation("sender")
-  conversations Conversation[]
+  profileUrl          String               @map("profile_url") @db.Text
+  servers             Server[]
+  members             Member[]
+  sentMessages        DirectMessage[]      @relation("sender")
+  conversationsToUser ConversationToUser[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -138,10 +138,24 @@ model Conversation {
   lastMessageAt DateTime @default(now()) @map("last_message_at")
   isGroup       Boolean  @default(false) @map("is_group")
 
-  users          User[]
-  directMessages DirectMessage[]
+  conversationToUsers ConversationToUser[]
+  directMessages      DirectMessage[]
 
   @@map("conversations")
+}
+
+model ConversationToUser {
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leftAt         DateTime?    @map("left_at")
+  mutedUntil     DateTime?    @map("muted_until")
+
+  @@id([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+  @@map("user_conversations")
 }
 
 model DirectMessage {
