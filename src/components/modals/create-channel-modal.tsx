@@ -168,7 +168,7 @@ export default function CreateChannelModal() {
                             ></FormField>
                         </div>
                         <DialogFooter className="bg-secondary px-6 py-3">
-                            <Button className="w-full" disabled={isLoading}>
+                            <Button className="w-full" disabled={isLoading || !form.formState.isValid}>
                                 Create
                                 {isLoading && (
                                     <Loader2 className="animate-spin ml-5" />
