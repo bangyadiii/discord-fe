@@ -11,6 +11,8 @@ export default function ReactQueryProvider({ children }: any) {
                     queries: {
                         refetchOnWindowFocus: false,
                         staleTime: 1000 * 60 * 5,
+                        refetchIntervalInBackground: true,
+                        optimisticResults: true,
                     },
                     mutations: {
                         retry: 10,

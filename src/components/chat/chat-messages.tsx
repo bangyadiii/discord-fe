@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { cn } from "@/lib/utils";
 import ChatWelcome from "@/components/chat/chat-welcome";
 import useChatQuery from "@/hooks/query/use-chat-query";
@@ -12,14 +12,15 @@ import { useQueryClient } from "react-query";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 import useChatSocket from "@/hooks/use-chat-socket";
 
-interface ChatMessagesProps {
+
+type ChatMessagesProps = {
     title: string;
     apiUrl: string;
     paramKey: "channelId" | "conversationId";
-    paramValue: string;
     type: ChatType;
+    paramValue: string;
     className?: string;
-}
+};
 
 export default function ChatMessages({
     title,
@@ -76,20 +77,14 @@ export default function ChatMessages({
         >
             <div ref={bottomRef} />
             {data?.pages.map((page, i) => (
-                <React.Fragment key={i}>
+                <Fragment key={i}>
                     {page.data?.map((message) => (
                         <ChatItem key={message.id} data={message} />
                     ))}
-                </React.Fragment>
+                </Fragment>
             ))}
             {hasNextPage && isFetchingNextPage && <ChatMessagesSkeleton />}
-
-            {!hasNextPage && (
-                <ChatWelcome
-                    type={type}
-                    name={title}
-                />
-            )}
+            {!hasNextPage && <ChatWelcome type={type} name={title} />}
         </div>
     );
 }

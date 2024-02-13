@@ -1,7 +1,5 @@
 "use client";
 
-import useFriendsQuery from "@/hooks/query/use-friends-query";
-import { Loader2, X } from "lucide-react";
 import { UserAvatar } from "../user-avatar";
 import {
     Command,
@@ -14,6 +12,7 @@ import { CommandEmpty } from "cmdk";
 import { User } from "@prisma/client";
 import { Checkbox } from "../ui/checkbox";
 import React from "react";
+import { X } from "lucide-react";
 
 interface DashboardFriendListProps {
     selectedFriends: User[];
@@ -27,7 +26,7 @@ export default function DashboardFriendList({
     friends,
 }: DashboardFriendListProps) {
     const toggleSelectedFriend = (friend: User) => {
-        if(selectedFriends.length > 10) return;
+        if (selectedFriends.length > 10) return;
         if (selectedFriends.includes(friend)) {
             setSelectedFriends((prev) =>
                 prev.filter((selectedFriend) => selectedFriend.id !== friend.id)
@@ -56,7 +55,7 @@ export default function DashboardFriendList({
                                         toggleSelectedFriend(friend);
                                     }}
                                 >
-                                    <X className="w-3 h-3 text-zinc-600 dark:text-zinc-400" />
+                                    <X className="w-3 h-3 text-zinc-600 dark:text-zinc-400 shrink-0" />
                                 </button>
                             </div>
                         );

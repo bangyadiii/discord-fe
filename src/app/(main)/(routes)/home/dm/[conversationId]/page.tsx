@@ -1,6 +1,6 @@
 import ChatHeader from "@/components/chat/chat-header";
 import ChatSection from "@/components/chat/chat-section";
-import PartnerDetail from "@/components/dashboard/dm/partner-detail";
+import PartnerDetail from "@/components/dashboard/conversation/partner-detail";
 import { MESSAGES_BATCH } from "@/config/app";
 import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 import { currentProfile } from "@/lib/current-profile";

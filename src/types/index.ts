@@ -4,12 +4,20 @@ import {
     Conversation,
     ConversationToUser,
     DirectMessage,
+    Friend,
     Member,
     MembershipRole,
     Message,
     Server,
     User,
 } from "@prisma/client";
+
+export type UserWithRelation = User & {
+    member?: MemberWithRelation;
+    friendRequestsSent?: FriendWithRelation[];
+    friendRequestsReceived?: FriendWithRelation[];
+    conversations?: ConversationWithRelation[];
+};
 
 export type MemberWithRelation = Member & {
     user?: User;
@@ -28,8 +36,8 @@ export type DirectMessageWithRelation = DirectMessage & {
 };
 
 export type MessageWithRelation = Message & {
-    member?: Member & { user?: User };
-    channel?: Channel;
+    member?: MemberWithRelation;
+    channel?: ChannelWithRelation;
 };
 
 export type ConversationToUserWithRelation = ConversationToUser & {
@@ -49,9 +57,14 @@ export type ChannelWithRelation = Channel & {
 };
 
 export type CategoryWithRelation = ChannelCategory & {
-    channels?: Channel[];
+    channels?: ChannelWithRelation[];
     server?: ServerWithRelation;
 };
+
+export type FriendWithRelation = Friend & {
+    sender?: User;
+    receiver?: User;
+} 
 
 export type ChatType = "channel" | "directMessage";
 

@@ -1,22 +1,41 @@
 import { axiosInstance } from "@/lib/axios";
-import { User } from "@prisma/client";
+import { FriendWithRelation, UserWithRelation } from "@/types";
 import { useQuery } from "react-query";
 
-const queryKey = "friends";
+export const AllKey = "all";
+export const pendingKey = "pending";
 
-export default function useFriendsQuery() {
-    const fetchFriends = async () => {
-        const res = await axiosInstance.get<{
-            message?: string;
-            data?: User[]; // @TODO: fake friend. Change the type later
-            error?: any;
-        }>("/friends");
-        return res.data;
-    };
+const fetchAllFriends = async () => {
+    const res = await axiosInstance.get<{
+        message?: string;
+        data?: UserWithRelation[];
+        error?: any;
+    }>("/friends");
+    return res.data;
+};
 
+const fetchPendingFriends = async () => {
+    const res = await axiosInstance.get<{
+        message?: string;
+        data?: FriendWithRelation[];
+        error?: any;
+    }>("/friends/request");
+    return res.data;
+};
+
+export function useFriendsQuery() {
     return useQuery({
-        queryKey: [queryKey],
-        queryFn: fetchFriends,
+        queryKey: AllKey,
+        queryFn: fetchAllFriends,
+        cacheTime: 1000 * 60 * 60 * 1,
+        refetchInterval: 1000 * 60 * 60 * 1,
+    });
+}
+
+export function usePendingFriendQuery() {
+    return useQuery({
+        queryKey: pendingKey,
+        queryFn: fetchPendingFriends,
         cacheTime: 1000 * 60 * 60 * 1,
         refetchInterval: 1000 * 60 * 60 * 1,
     });
