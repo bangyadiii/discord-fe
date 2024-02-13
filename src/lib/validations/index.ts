@@ -6,30 +6,22 @@ export const chatInputValidator = z.object({
 });
 
 export const createChannelCategoryValidator = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
+    name: z.string().min(1, "Channel name is required.").max(40, "Too Long"),
     serverId: z.string(),
 });
 
 export const saveChannelValidator = z.object({
-    name: z
-        .string()
-        .min(1, "Channel name is required.")
-        .max(100, "Too Long")
-        .refine((value) => value !== "general", {
-            message: "Channel name cannot be 'general'",
-        }),
+    name: z.string().min(1, "Channel name is required.").max(40, "Too Long"),
     type: z.nativeEnum(ChannelType),
     serverId: z.string(),
     categoryId: z.string().nullable(),
 });
 
 export const inputServerValidator = z.object({
-    name: z.string().min(1, "Server name is required.").max(100, "Too Long"),
+    name: z.string().min(1, "Server name is required.").max(40, "Too Long"),
     imageUrl: z.string().url(),
+});
+
+export const addFriendValidator = z.object({
+    username: z.string(),
 });

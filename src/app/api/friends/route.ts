@@ -1,8 +1,9 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { RequestStatus } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         const session = await currentProfile();
         if (!session) {
@@ -11,15 +12,39 @@ export async function GET() {
                 { status: 401 }
             );
         }
-        // fake friends because we don't have a friends table
-        // @TODO: implement friends table
+        const friendList = await db.friend.findMany({
+            where: {
+                status: RequestStatus.ACCEPTED,
+                OR: [
+                    {
+                        senderId: session.id,
+                    },
+                    {
+                        receiverId: session.id,
+                    },
+                ],
+            },
+        });
+
         const friends = await db.user.findMany({
             where: {
-                NOT: {
-                    id: session.id,
-                },
+                AND: [
+                    {
+                        id: {
+                            in: friendList.map((friend) =>
+                                friend.senderId === session.id
+                                    ? friend.receiverId
+                                    : friend.senderId
+                            ),
+                        },
+                    },
+                    {
+                        NOT: {
+                            id: session.id,
+                        },
+                    },
+                ],
             },
-            take: 20,
         });
         return NextResponse.json({ data: friends });
     } catch (error) {

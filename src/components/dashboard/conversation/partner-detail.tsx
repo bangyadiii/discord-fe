@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCurrentConversation } from "@/hooks/store/use-current-conversation-store";
 import { formatTimeForHuman } from "@/lib/utils";
 import { auth } from "@clerk/nextjs";
+import PartnerDetailAction from "./partner-detail-action";
 
 export default function PartnerDetail() {
     const { userId } = auth();
@@ -35,12 +36,17 @@ export default function PartnerDetail() {
                 <span className="font-semibold text-primary-foreground">
                     {currentPartner?.name!}
                 </span>
+                <span className="text-xs text-zinc-300 dark:text-zinc-400">
+                    ({currentPartner?.username})
+                </span>
+                <PartnerDetailAction />
                 <Separator />
                 <p className="text-[10px] text-bold text-primary-foreground">
                     MEMBER SINCE
                 </p>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                    {formatTimeForHuman(currentPartner?.createdAt!) ?? "Pending"}
+                    {formatTimeForHuman(currentPartner?.createdAt!) ??
+                        "Pending"}
                 </p>
             </div>
         </div>

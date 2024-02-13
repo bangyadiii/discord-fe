@@ -12,12 +12,10 @@ interface PostConversationResponse {
     error?: any;
 }
 
-const postConversation = async (userIds: string[]) => {
-    const response = await axiosInstance.post<PostConversationResponse>(
-        "/conversations",
-        { userIds }
-    );
-    return response.data;
+const postConversation = (userIds: string[]) => {
+    return axiosInstance.post<PostConversationResponse>("/conversations", {
+        userIds,
+    });
 };
 
 // react query mutation hook for post conversation
@@ -35,10 +33,10 @@ export function useCreateConversationMutation() {
             });
         },
         onSettled: async (data, error, variables, context) => {
-            if (data?.error) {
+            if (data?.data.error) {
                 toast.toast({
                     title: "Failed to create conversation",
-                    description: data.message ?? "An error occurred",
+                    description: data.data?.message ?? "An error occurred",
                     variant: "destructive",
                 });
             }
@@ -49,21 +47,21 @@ export function useCreateConversationMutation() {
                 // search existing conversation, if found, update it
                 const existingConversation = oldData?.data?.find(
                     (conversation: ConversationWithRelation) =>
-                        conversation.id === data.data?.id
+                        conversation.id === data.data?.data?.id
                 );
                 if (existingConversation) {
                     return {
                         data: oldData?.data?.map(
                             (conversation: ConversationWithRelation) =>
-                                conversation.id === data?.data?.id
-                                    ? data?.data
+                                conversation.id === data?.data?.data?.id
+                                    ? data?.data?.data
                                     : conversation
                         ),
                     };
                 }
                 // if not found, add it to the list
                 return {
-                    data: [data?.data, ...oldData?.data],
+                    data: [data?.data?.data, ...oldData?.data],
                 };
             });
         },

@@ -55,7 +55,20 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        if (conversation) return NextResponse.json({ data: conversation });
+        if (conversation) {
+            await db.conversationToUser.update({
+                where: {
+                    conversationId_userId: {
+                        conversationId: conversation.id,
+                        userId: user.id,
+                    },
+                },
+                data: {
+                    leftAt: null,
+                },
+            });
+            return NextResponse.json({ data: conversation });
+        }
         const newConversation = await db.conversation.create({
             data: {
                 isGroup: userIds.length > 2,
@@ -91,6 +104,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const user = await currentProfile();
+
         if (!user)
             return NextResponse.json(
                 { message: "Unauthorized" },
@@ -106,7 +120,7 @@ export async function GET(req: NextRequest) {
                 },
             },
             include: {
-                conversationToUsers:{
+                conversationToUsers: {
                     include: {
                         user: true,
                     },
@@ -119,6 +133,7 @@ export async function GET(req: NextRequest) {
                 },
             },
         });
+
         return NextResponse.json({ data: conversations });
     } catch (error: any) {
         console.log("[GET_CONVERSATION_BY_ID]", error);

@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function DeleteServerModal() {
-    const { isOpen, onClose, type, data, onOpen } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteServer";
     const [isLoading, setIsLoading] = React.useState(false);
     const router = useRouter();
@@ -34,7 +34,7 @@ export default function DeleteServerModal() {
                 `/servers/${data?.server?.id}`
             );
             router.refresh();
-            router.push("/");
+            router.push("/dashboard");
             window.location.reload();
         } catch (error: any) {
             toast({

@@ -18,9 +18,9 @@ export default function NavigationDashboard() {
     }, []);
 
     const handleOnClick = () => {
-        router.push(`/home`);
+        router.push(`/dashboard`);
     };
-    const isCurrentPath = pathname?.includes("/home");
+    const isCurrentPath = pathname?.includes("/dashboard");
     if (!isMounted)
         return (
             <div className="flex items-center w-full justify-center">

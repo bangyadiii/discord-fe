@@ -12,22 +12,58 @@ generator client {
 }
 
 model User {
-  id             String @id @default(uuid())
-  name           String
-  email          String @unique
-  provider       String
-  providerUserId String @unique @map("provider_user_id")
-
-  profileUrl          String               @map("profile_url") @db.Text
-  servers             Server[]
-  members             Member[]
-  sentMessages        DirectMessage[]      @relation("sender")
-  conversationsToUser ConversationToUser[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                     String               @id @default(uuid())
+  name                   String
+  username               String               @unique
+  email                  String               @unique
+  provider               String
+  providerUserId         String               @unique @map("provider_user_id")
+  profileUrl             String               @map("profile_url") @db.Text
+  servers                Server[]
+  members                Member[]
+  sentMessages           DirectMessage[]      @relation("sender")
+  conversationsToUser    ConversationToUser[]
+  friendRequestsSent     Friend[]             @relation("FriendRequestsSent")
+  friendRequestsReceived Friend[]             @relation("FriendRequestsReceived")
+  blockedUsers           Block[]              @relation("BlockedUser")
+  blockedBy              Block[]              @relation("BlockedBy")
+  createdAt              DateTime             @default(now()) @map("created_at")
+  updatedAt              DateTime             @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Block {
+  id        Int    @id @default(autoincrement())
+  blockerId String @map("blocker_id")
+  blocker   User   @relation("BlockedBy", fields: [blockerId], references: [id])
+  blockedId String @map("blocked_id")
+  blocked   User   @relation("BlockedUser", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Friend {
+  id         Int           @id @default(autoincrement())
+  senderId   String        @map("sender_id")
+  sender     User          @relation("FriendRequestsSent", fields: [senderId], references: [id])
+  receiverId String        @map("receiver_id")
+  receiver   User          @relation("FriendRequestsReceived", fields: [receiverId], references: [id])
+  status     RequestStatus
+
+  @@unique([receiverId, senderId])
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("friend_request")
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Server {
@@ -37,30 +73,25 @@ model Server {
   inviteCode        String            @unique @map("invite_code")
   channelCategories ChannelCategory[]
   channels          Channel[]
-
-  ownerId String @map("owner_id")
-  owner   User   @relation(fields: [ownerId], references: [id])
-
-  members Member[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  ownerId           String            @map("owner_id")
+  owner             User              @relation(fields: [ownerId], references: [id])
+  members           Member[]
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
 
   @@index([ownerId])
   @@map("servers")
 }
 
 model ChannelCategory {
-  id   String @id @default(uuid())
-  name String
-
-  serverId String    @map("server_id")
-  order    Int       @default(0)
-  server   Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  channels Channel[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  name      String
+  serverId  String    @map("server_id")
+  order     Int       @default(0)
+  server    Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  channels  Channel[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   @@index([serverId])
   @@map("channel_categories")
@@ -81,9 +112,8 @@ model Channel {
   order      Int              @default(0)
   category   ChannelCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   messages   Message[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
 
   @@index([serverId])
   @@index([categoryId])
@@ -114,15 +144,13 @@ model Member {
 }
 
 model Message {
-  id      String  @id @default(uuid()) @map("id")
-  content String  @map("content") @db.Text
-  fileUrl String? @map("file_url") @db.Text
-
-  channelId String  @map("channel_id")
-  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  memberId  String  @map("member_id")
-  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
-
+  id        String    @id @default(uuid()) @map("id")
+  content   String    @map("content") @db.Text
+  fileUrl   String?   @map("file_url") @db.Text
+  channelId String    @map("channel_id")
+  channel   Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  memberId  String    @map("member_id")
+  member    Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -133,11 +161,10 @@ model Message {
 }
 
 model Conversation {
-  id            String   @id @default(uuid()) @map("id")
-  createdAt     DateTime @default(now()) @map("created_at")
-  lastMessageAt DateTime @default(now()) @map("last_message_at")
-  isGroup       Boolean  @default(false) @map("is_group")
-
+  id                  String               @id @default(uuid()) @map("id")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  lastMessageAt       DateTime             @default(now()) @map("last_message_at")
+  isGroup             Boolean              @default(false) @map("is_group")
   conversationToUsers ConversationToUser[]
   directMessages      DirectMessage[]
 
@@ -159,13 +186,11 @@ model ConversationToUser {
 }
 
 model DirectMessage {
-  id      String  @id @default(uuid()) @map("id")
-  content String  @map("content") @db.Text
-  fileUrl String? @map("file_url") @db.Text
-
-  senderId String @map("sender_id")
-  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
-
+  id             String       @id @default(uuid()) @map("id")
+  content        String       @map("content") @db.Text
+  fileUrl        String?      @map("file_url") @db.Text
+  senderId       String       @map("sender_id")
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   readAt         DateTime?    @map("read_at")

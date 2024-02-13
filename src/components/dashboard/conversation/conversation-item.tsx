@@ -10,25 +10,27 @@ import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useDeleteConversationMutation } from "@/hooks/query/use-conversations-mutation";
 
-interface DMItemProps {
+interface ConversationItemProps {
     conversation: ConversationWithRelation;
 }
 
-export default function DMItem({ conversation }: DMItemProps) {
+export default function ConversationItem({
+    conversation,
+}: ConversationItemProps) {
     const mutation = useDeleteConversationMutation();
     const router = useRouter();
     const params = useParams();
     const user = useUser().user;
 
     const handleOnClick = () => {
-        router.push(`/home/dm/${conversation.id}`);
+        router.push(`/dashboard/conversations/${conversation.id}`);
     };
 
     const handleDeleteConversation = (e: React.MouseEvent) => {
         e.stopPropagation();
         mutation.mutate(conversation.id);
         if (params?.conversationId === conversation.id) {
-            router.push("/home");
+            router.push("/dashboard?tab=online");
         }
     };
 

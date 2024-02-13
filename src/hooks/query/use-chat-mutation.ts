@@ -58,5 +58,8 @@ export default function usePostChatMutation({
             });
             return { prevMessages };
         },
+        onError: (error, variables, context) => {
+            queryClient.setQueryData([queryKey], context?.prevMessages);
+        },
     });
 }

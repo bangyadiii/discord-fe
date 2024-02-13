@@ -9,7 +9,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import DashboardFriendList from "./dashboard-friend-list";
 import { Loader2, Plus } from "lucide-react";
 import { ActionTooltip } from "../action-tooltip";
-import useFriendsQuery from "@/hooks/query/use-friends-query";
+import { useFriendsQuery } from "@/hooks/query/use-friends-query";
 import { User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useCreateConversationMutation } from "@/hooks/query/use-conversations-mutation";
@@ -20,8 +20,8 @@ export default function MakeConversation() {
     const { data, isLoading } = useFriendsQuery();
     const [selectedFriends, setSelectedFriends] = useState<User[]>([]);
     const [open, setOpen] = useState(false);
-    const mutation = useCreateConversationMutation();
     const router = useRouter();
+    const mutation = useCreateConversationMutation();
 
     const conversations = useMemo(() => {
         return data?.data;
@@ -35,6 +35,14 @@ export default function MakeConversation() {
     if (!isMounted) return null;
 
     const isDesktop = window.innerWidth > 768;
+
+    const handleCreateConversation = () => {
+        const ids = selectedFriends.map((friend) => friend.id);
+        mutation.mutate(ids);
+        setOpen((prev) => !prev);
+        setSelectedFriends([]);
+        router.push(`/dashboard/conversations/${mutation.data?.data.data?.id}`);
+    };
 
     const renderPopover = () => {
         return (
@@ -74,6 +82,9 @@ export default function MakeConversation() {
                     <Button
                         className="mt-3 w-full"
                         onClick={handleCreateConversation}
+                        disabled={
+                            selectedFriends.length === 0 || mutation.isLoading
+                        }
                     >
                         {mutation.isLoading ? (
                             <Loader2 className="w-5 h-5 text-zinc-700 animate-spin dark:text-zinc-500 self-center" />
@@ -130,15 +141,6 @@ export default function MakeConversation() {
                 </DrawerContent>
             </Drawer>
         );
-    };
-
-    const handleCreateConversation = () => {
-        const ids = selectedFriends.map((friend) => friend.id);
-        mutation.mutateAsync(ids).then((data) => {
-            setOpen((prev) => !prev);
-            setSelectedFriends([]);
-            router.push(`/home/dm/${data?.data?.id}`);
-        });
     };
 
     return isDesktop ? renderPopover() : renderDrawer();
