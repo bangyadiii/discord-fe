@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function SetupPage() {
     const user = await currentProfile();
-    if (user) return redirect(`/home`);
+    if (user) return redirect(`/dashboard`);
     await initialProfile();
-    return redirect(`/home`);
+    return redirect(`/dashboard`);
 }

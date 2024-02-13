@@ -41,7 +41,7 @@ export default function MakeConversation() {
         mutation.mutate(ids);
         setOpen((prev) => !prev);
         setSelectedFriends([]);
-        router.push(`/home/dm/${mutation.data?.data.data?.id}`);
+        router.push(`/dashboard/conversations/${mutation.data?.data.data?.id}`);
     };
 
     const renderPopover = () => {

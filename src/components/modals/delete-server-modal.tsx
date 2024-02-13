@@ -34,7 +34,7 @@ export default function DeleteServerModal() {
                 `/servers/${data?.server?.id}`
             );
             router.refresh();
-            router.push("/home");
+            router.push("/dashboard");
             window.location.reload();
         } catch (error: any) {
             toast({

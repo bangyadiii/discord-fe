@@ -14,21 +14,23 @@ interface ConversationItemProps {
     conversation: ConversationWithRelation;
 }
 
-export default function ConversationItem({ conversation }: ConversationItemProps) {
+export default function ConversationItem({
+    conversation,
+}: ConversationItemProps) {
     const mutation = useDeleteConversationMutation();
     const router = useRouter();
     const params = useParams();
     const user = useUser().user;
 
     const handleOnClick = () => {
-        router.push(`/home/dm/${conversation.id}`);
+        router.push(`/dashboard/conversations/${conversation.id}`);
     };
 
     const handleDeleteConversation = (e: React.MouseEvent) => {
         e.stopPropagation();
         mutation.mutate(conversation.id);
         if (params?.conversationId === conversation.id) {
-            router.push("/home?tab=online");
+            router.push("/dashboard?tab=online");
         }
     };
 

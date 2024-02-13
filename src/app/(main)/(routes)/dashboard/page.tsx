@@ -11,28 +11,28 @@ import { useSearchParams } from "next/navigation";
 const Links = [
     {
         href: {
-            pathname: "/home",
+            pathname: "/dashboard",
             query: { tab: "online" },
         },
         label: "Online",
     },
     {
         href: {
-            pathname: "/home",
+            pathname: "/dashboard",
             query: { tab: "all" },
         },
         label: "All",
     },
     {
         href: {
-            pathname: "/home",
+            pathname: "/dashboard",
             query: { tab: "pending" },
         },
         label: "Pending",
     },
     {
         href: {
-            pathname: "/home",
+            pathname: "/dashboard",
             query: { tab: "blocked" },
         },
         label: "Blocked",

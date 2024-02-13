@@ -19,7 +19,7 @@ export function FriendItem({ friend }: FriendItemProps) {
 
     const handleChat = () => {
         mutation.mutate([friend.id]);
-        router.push(`/home/dm/${mutation.data?.data.data?.id}`);
+        router.push(`/dashboard/conversations/${mutation.data?.data.data?.id}`);
     };
 
     return (
