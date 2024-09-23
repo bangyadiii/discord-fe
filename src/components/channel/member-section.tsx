@@ -11,6 +11,7 @@ import OnlineStatus from "@/components/online-status";
 import { Separator } from "@/components/ui/separator";
 import ChatInput from "@/components/chat/chat-input";
 import { cn } from "@/lib/utils";
+import { random } from "lodash";
 
 interface MemberSectionProps {
     server?: ServerWithRelation;
@@ -22,14 +23,22 @@ export default async function MemberSection({ server }: MemberSectionProps) {
         <div className="bg-secondary h-full w-full p-3">
             <ScrollArea>
                 {server?.members?.map((member) => {
+                    if (!member || !member.user) {
+                        return (
+                            <div key={random()}>
+                                <p>Member not found</p>
+                            </div>
+                        );
+                    }
+
                     return (
                         <Popover key={member.id}>
                             <PopoverTrigger className="w-full flex items-center gap-x-2 rounded-md hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition-all p-2">
-                                <UserAvatar src={member.user?.profileUrl!!} />
+                                <UserAvatar src={member.user.profileUrl} />
                                 <div className="flex flex-col gap-y-1">
                                     <div className="text-xs font-semibold flex items-center gap-x-1">
-                                        {member.user?.name}{" "}
-                                        {member.user?.id === user?.id && (
+                                        {member.user.name}{" "}
+                                        {member.user.id === user?.id && (
                                             <span className="text-xs text-zinc-400">
                                                 (You)
                                             </span>
@@ -50,7 +59,7 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                         ></div>
                                         <div className="px-6 py-4 relative w-14 h-14 md:h-20 md:w-20">
                                             <UserAvatar
-                                                src={member.user?.profileUrl!!}
+                                                src={member.user.profileUrl}
                                                 className="w-14 h-14 md:h-20 md:w-20 ring-[6px] ring-secondary"
                                             />
                                             <OnlineStatus className="absolute -bottom-3 -right-5 w-4 h-4 ring-[6px] ring-secondary" />
@@ -58,7 +67,7 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                     </div>
                                     <div className="bg-zinc-900 mx-4 mb-4 rounded-md p-3 flex flex-col gap-y-1">
                                         <span className="font-semibold">
-                                            {member?.user?.name}
+                                            {member.user.name}
                                         </span>
                                         <Separator />
                                         <p className="text-[10px] text-bold ">
@@ -66,22 +75,29 @@ export default async function MemberSection({ server }: MemberSectionProps) {
                                         </p>
                                         <p className="text-zinc-600 dark:text-zinc-400">
                                             {new Date(
-                                                member?.joinedAt!!
+                                                member.joinedAt
                                             ).toLocaleDateString()}
                                         </p>
-                                        <div className={cn(member.user?.id === user?.id ? 'hidden' : 'block', 'mt-2')}>
+                                        <div
+                                            className={cn(
+                                                member.user.id === user?.id
+                                                    ? "hidden"
+                                                    : "block",
+                                                "mt-2"
+                                            )}
+                                        >
                                             <ChatInput
-                                                name={member?.user?.name!}
+                                                title={member.user.name}
                                                 type="directMessage"
                                                 apiURL="/dm"
                                                 query={{
                                                     conversationId:
-                                                        member.user?.id,
+                                                        member.user.id,
                                                 }}
-                                                include={{ 
+                                                include={{
                                                     emoji: false,
                                                     fileUploads: false,
-                                                 }}
+                                                }}
                                             />
                                         </div>
                                     </div>
