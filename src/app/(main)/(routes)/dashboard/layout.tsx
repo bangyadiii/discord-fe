@@ -9,53 +9,53 @@ import { User } from "@prisma/client";
 import React from "react";
 
 export default async function DMLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    const user = await currentProfile();
-    if (!user) return redirectToSignIn();
+  const user = await currentProfile();
+  if (!user) return redirectToSignIn();
 
-    const conversations = await getConversations(user);
-    useConversations.setState({
-        conversations,
-    });
+  const conversations = await getConversations(user);
+  useConversations.setState({
+    conversations,
+  });
 
-    return (
-        <div className="h-screen flex overflow-hidden">
-            <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
-                <DashboardSidebar />
-            </div>
+  return (
+    <div className="h-screen flex overflow-hidden">
+      <div className="hidden md:flex h-full w-60 z-20 flex-col inset-y-0 fixed">
+        <DashboardSidebar />
+      </div>
 
-            <div className="h-full flex-1 md:pl-60">{children}</div>
-        </div>
-    );
+      <div className="h-full flex-1 md:pl-60">{children}</div>
+    </div>
+  );
 }
 
 async function getConversations(
-    user: User
+  user: User
 ): Promise<ConversationWithRelation[]> {
-    return await db.conversation.findMany({
-        where: {
-            conversationToUsers: {
-                some: {
-                    userId: user.id,
-                    leftAt: null,
-                },
-            },
+  return await db.conversation.findMany({
+    where: {
+      conversationToUsers: {
+        some: {
+          userId: user.id,
+          leftAt: null,
         },
+      },
+    },
+    include: {
+      conversationToUsers: {
         include: {
-            conversationToUsers: {
-                include: {
-                    user: true,
-                },
-            },
-            directMessages: {
-                take: MESSAGES_BATCH,
-                include: {
-                    sender: true,
-                },
-            },
+          user: true,
         },
-    });
+      },
+      directMessages: {
+        take: MESSAGES_BATCH,
+        include: {
+          sender: true,
+        },
+      },
+    },
+  });
 }
