@@ -13,7 +13,7 @@ export default function FileUpload({
     value,
     endpoint,
     onChange,
-}: FileUploadProps) {
+}: Readonly<FileUploadProps>) {
     const fileType = value?.split(".").pop();
     if (value && fileType !== "pdf") {
         return (

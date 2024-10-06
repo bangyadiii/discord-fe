@@ -13,7 +13,7 @@ interface NavigationSideBarProps {
 
 export default async function NavigationSideBar({
     servers,
-}: NavigationSideBarProps) {
+}: Readonly<NavigationSideBarProps>) {
     return (
         <nav className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-zinc-200 dark:bg-[#1E1F22] py-3">
             <NavigationDashboard />
@@ -29,9 +29,9 @@ export default async function NavigationSideBar({
                             />
                         </div>
                     ))}
+            <NavigationAction />
             </ScrollArea>
             <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
-            <NavigationAction />
             <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
                 <ModeToggle />
                 <UserButton

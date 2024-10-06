@@ -16,7 +16,7 @@ export default function NavigationItem({
     id,
     name,
     imageUrl,
-}: NavigationItemProps) {
+}: Readonly<NavigationItemProps>) {
     const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
     const params = useParams();

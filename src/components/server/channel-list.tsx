@@ -13,7 +13,7 @@ interface ChannelListProps {
 export default function ChannelList({
     server: initialData,
     sessionMember,
-}: ChannelListProps) {
+}: Readonly<ChannelListProps>) {
     const { data } = useServerQuery({
         apiUrl: `/servers/${initialData.id}`,
         initialData: initialData,

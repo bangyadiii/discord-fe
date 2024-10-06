@@ -35,7 +35,7 @@ export default function ChatInput({
     title,
     type,
     include = { fileUploads: true, emoji: true },
-}: ChatInputProps) {
+}: Readonly<ChatInputProps>) {
     const { data: user } = useCurrentUserQuery();
     const form = useForm<z.infer<typeof chatInputValidator>>({
         resolver: zodResolver(chatInputValidator),

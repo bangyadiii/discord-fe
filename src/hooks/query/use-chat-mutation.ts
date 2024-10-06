@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { User } from "@prisma/client";
 import queryString from "query-string";
-import { MutationKey, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 
 const postChatFn = (endpoint: string, query: Record<string, any>) => {
     return (newMessage: {

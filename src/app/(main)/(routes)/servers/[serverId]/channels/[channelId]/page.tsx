@@ -58,7 +58,7 @@ async function getCurrentChannel(
     });
 }
 
-async function ChannelPage({ params }: ChannelPageProps) {
+async function ChannelPage({ params }: Readonly<ChannelPageProps>) {
     const profile = await currentProfile();
     if (!profile) return redirectToSignIn();
     if (!params?.serverId || !params?.channelId) return redirect("/");
